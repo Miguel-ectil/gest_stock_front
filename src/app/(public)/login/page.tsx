@@ -65,7 +65,7 @@ export default function LoginPage() {
                         Esqueceu sua senha?
                     </a>
                     <span className="mx-2">•</span>
-                    <a href="#" className="hover:underline">
+                    <a href="/register" className="hover:underline">
                         Criar uma conta
                     </a>
                 </div>
