@@ -14,7 +14,6 @@ export interface LoginResponse {
   };
 }
 
-// Tipagem genérica do serviço de autenticação
 export interface AuthServiceType {
   login: (data: LoginRequest) => Promise<LoginResponse>;
 }
