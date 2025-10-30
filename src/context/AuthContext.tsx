@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth";
+import { AxiosResponse } from "axios";
 
 interface AuthContextType {
   user: any | null;
@@ -22,11 +23,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const service = AuthService();
 
   useEffect(() => {
-    // Verifica token no cookie ao iniciar
     const token = Cookies.get("token");
     if (token) {
-      // Se tiver token, podemos buscar dados do usuário se necessário
-      setUser({ token }); // aqui poderia buscar do backend se quiser
+      setUser({ token });
     } else {
       setUser(null);
     }
@@ -36,10 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (data: any) => {
     setLoading(true);
     try {
-      const response = await service.login(data);
-      const token = response?.token;
+      // O retorno do axios é AxiosResponse<{ token: string }>
+      const response: AxiosResponse<{ token: string }> = await service.login(data);
+      const token = response.data.token; // ✅ Corrigido aqui
 
-      Cookies.set("token", token, { expires: 1 }); // 1 dia
+      Cookies.set("token", token, { expires: 1 });
       setUser({ token });
       router.push("/dashboard");
     } catch (err) {

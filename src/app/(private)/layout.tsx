@@ -14,9 +14,9 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     }
   }, [loading, isAuthenticated, router]);
 
-  if (loading) {
-    return <div className="p-8 text-center">Verificando autenticação...</div>;
-  }
+//   if (loading) {
+//     return <div className="p-8 text-center">Verificando autenticação...</div>;
+//   }
 
   if (!isAuthenticated) {
     return null; 
