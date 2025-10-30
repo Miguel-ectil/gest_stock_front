@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // O retorno do axios é AxiosResponse<{ token: string }>
       const response: AxiosResponse<{ token: string }> = await service.login(data);
-      const token = response.data.token; // ✅ Corrigido aqui
+      const token = response.data.token; 
 
       Cookies.set("token", token, { expires: 1 });
       setUser({ token });
