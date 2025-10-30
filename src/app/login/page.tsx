@@ -9,7 +9,7 @@ export default function LoginPage() {
         router.push("/");
     }
     return (
-        <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <div className="flex min-h-screen items-center justify-center">{/*bg-zinc-50 dark:bg-zinc-950*/}
             <main className="flex w-full max-w-md flex-col items-center rounded-xl border border-zinc-200 bg-white p-10 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-12">
                 <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                     Bem-vindo de volta!
