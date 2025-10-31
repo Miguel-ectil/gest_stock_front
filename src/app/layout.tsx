@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <AuthProvider>
           <header className="flex justify-end p-4">
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
           </header>
           {children}
         </AuthProvider>
