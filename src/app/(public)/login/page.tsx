@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 export default function LoginPage() {
     const router = useRouter();
 
@@ -10,14 +10,12 @@ export default function LoginPage() {
     }
     return (
         <div className="flex min-h-screen items-center justify-center">{/*bg-zinc-50 dark:bg-zinc-950*/}
-            <main className="flex w-full max-w-md flex-col items-center rounded-xl border border-zinc-200 bg-white p-10 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-12">
-                <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            <main className="flex w-full max-w-md flex-col items-center rounded-xl border border-zinc-200 bg-white p-80 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-10">
+                {/* <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                     Bem-vindo de volta!
-                </h1>
+                </h1> */}
 
-                <p className="mb-8 text-center text-zinc-600 dark:text-zinc-400">
-                    Entre com suas credenciais para continuar
-                </p>
+                <Image alt="Logo da empresa" src="/imgs/logo_gestao.png" width={240} height={140} />
 
                 {/* Formulário */}
                 <form className="w-full space-y-5">
