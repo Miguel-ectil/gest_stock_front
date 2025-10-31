@@ -10,13 +10,20 @@ export default function LoginPage() {
     }
     return (
         <div className="flex min-h-screen items-center justify-center">{/*bg-zinc-50 dark:bg-zinc-950*/}
-            <main className="flex w-full max-w-md flex-col items-center rounded-xl border border-zinc-200 bg-white p-80 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-10">
-                {/* <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            <main
+                className="
+          flex w-full max-w-md flex-col items-center 
+          rounded-xl border border-zinc-200 bg-white 
+          p-10 shadow-xl
+          dark:border-zinc-800 dark:bg-zinc-900
+          transition-colors
+        "
+            >                {/* <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
                     Bem-vindo de volta!
                 </h1> */}
-
-                <Image alt="Logo da empresa" src="/imgs/logo_gestao.png" width={240} height={140} />
-
+                <div className="bg-white mb-6 flex items-center justify-center rounded-lg p-2 shadow-md dark:bg-zinc-800">
+                    <Image alt="Logo da empresa" src="/imgs/logo_gestao.png" width={240} height={140} />
+                </div>
                 {/* Formulário */}
                 <form className="w-full space-y-5">
                     <div className="space-y-2">
@@ -59,12 +66,9 @@ export default function LoginPage() {
 
                 {/* Links de ajuda */}
                 <div className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
-                    <a href="#" className="hover:underline">
-                        Esqueceu sua senha?
-                    </a>
-                    <span className="mx-2">•</span>
-                    <a href="/register" className="hover:underline">
-                        Criar uma conta
+                    <span className="mx-1.5">Não tem conta?</span>
+                    <a href="/register" className="hover:underline text-blue-400">
+                      Criar uma conta
                     </a>
                 </div>
             </main>
