@@ -3,14 +3,14 @@
 
 /* 🌈 Tema base (claro por padrão) */
 :root {
-  --background: #0a0a0a;
-  --foreground: #FBF4F4;
+    --background: #FBF4F4;
+    --foreground: #171717;
 }
 
 /* 🌙 Tema escuro (ativado pela classe .dark no <html> ou <body>) */
 .dark {
-  --background: #FBF4F4;
-  --foreground: #171717;
+    --background: #0a0a0a;
+    --foreground: #FBF4F4;
 }
 
 /* 🧩 Integração com Tailwind */
@@ -20,14 +20,6 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
-
-/* 🌗 Suporte automático (para quem prefere dark mode no sistema) */
-/* @media (prefers-color-scheme: dark) {
-  :root:not(.dark) {
-    --background: #0a0a0a;
-    --foreground: #fbf4f4;
-  }
-} */
 
 /* 🧠 Estilos globais */
 body {

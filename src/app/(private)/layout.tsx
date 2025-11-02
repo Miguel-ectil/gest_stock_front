@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ui/theme-toggle";
+import Header from "@/layout/Header";
 
 export default function PrivateLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth();
@@ -23,7 +24,10 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
     return null; 
   }
 
-  return <>
-  <ThemeToggle />
-  {children}</>;
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  )
 }

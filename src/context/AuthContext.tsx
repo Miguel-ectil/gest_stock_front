@@ -35,7 +35,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (data: any) => {
     setLoading(true);
     try {
-      // O retorno do axios é AxiosResponse<{ token: string }>
       const response: AxiosResponse<{ token: string }> = await service.login(data);
       const token = response.data.token; 
 
