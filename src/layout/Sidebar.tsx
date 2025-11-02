@@ -18,7 +18,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
 
     const menuItems = [
         { name: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
-        { name: "Produtos", icon: <Package size={20} />, path: "/produtos" },
+        { name: "Produtos", icon: <Package size={20} />, path: "/products" },
         { name: "Vendas", icon: <ShoppingCart size={20} />, path: "/vendas" },
         { name: "Configurações", icon: <Settings size={20} />, path: "/config" },
     ];
