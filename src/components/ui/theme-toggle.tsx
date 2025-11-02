@@ -29,7 +29,7 @@ export default function ThemeToggle() {
         shadow-lg
         bg-indigo-600 text-white
         hover:bg-indigo-700
-        dark:bg-yellow-400 dark:text-gray-900 dark:hover:bg-yellow-300
+        dark:bg-gra-400 dark:text-gray-900 dark:hover:bg-gra-600 border
         transition-all duration-300
         focus:outline-none focus:ring-4 focus:ring-indigo-300 dark:focus:ring-yellow-200
       "
