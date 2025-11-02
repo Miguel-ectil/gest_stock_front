@@ -11,6 +11,9 @@ const { user, logout } = useAuth();
         <Image src="/imgs/logo_gestao_encur.png" alt="Logo" width={40} height={40} />
               <h1 className="text-xl font-bold text-white dark:bg-gray-900">Gestão de Estoque</h1>
       </div> 
+      <p className="text-gray-500 dark:text-gray-400">
+        Olá, {user?.name || "Usuário"}!
+      </p>
     </header>
   );
 }
