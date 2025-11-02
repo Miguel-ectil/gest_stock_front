@@ -21,8 +21,7 @@ export default function Layout({ children }: DashboardLayoutProps) {
           }`}
       >
         <Header />
-
-        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+        <main className="flex-1 p-4 overflow-y-auto">{children}</main>
       </div>
     </div>
   );
