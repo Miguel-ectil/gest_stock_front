@@ -15,10 +15,10 @@ export default function DashboardPage() {
   ];
 
   return (
-    <main className="p-8 space-y-6">
+    <main>
       {/* Cabeçalho */}
       <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+        <h1 className="text-2xl font-bold text-gray-200 dark:text-gray-600">
           Bem-vindo, {user?.name ?? "Usuário"}!
         </h1>
         <div className="flex items-center gap-3">
@@ -26,14 +26,12 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Token do usuário */}
       {user?.token && (
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Seu token: <span className="font-mono text-gray-200 dark:text-gray-600">{user.token}</span>
         </p>
       )}
 
-      {/* Cards do dashboard */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {dashboardCards.map((card) => (
           <div

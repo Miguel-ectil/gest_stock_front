@@ -11,12 +11,9 @@ const { user, logout } = useAuth();
         <Image src="/imgs/logo_gestao_encur.png" alt="Logo" width={40} height={40} />
               <h1 className="text-xl font-bold text-white dark:bg-gray-900">Gestão de Estoque</h1>
       </div> 
-          {/* <button
-              onClick={logout}
-              className="mt-4 px-4 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer"
-          >
-              Sair
-          </button> */}
+      <p className="text-gray-500 dark:text-gray-400">
+        Olá, {user?.name || "Usuário"}!
+      </p>
     </header>
   );
 }
