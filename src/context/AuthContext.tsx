@@ -24,11 +24,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const token = Cookies.get("token");
+
     if (token) {
       setUser({ token });
     } else {
       setUser(null);
     }
+
     setLoading(false);
   }, []);
 
@@ -36,13 +38,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       const response: AxiosResponse<{ token: string }> = await service.login(data);
-      const token = response.data.token; 
+
+      const token = response.data.token;
 
       Cookies.set("token", token, { expires: 1 });
+
       setUser({ token });
+
       router.push("/dashboard");
     } catch (err) {
-      console.error("Erro ao logar:", err);
+      console.error("❌ Erro ao logar:", err);
+      alert("Falha no login. Verifique suas credenciais.");
     } finally {
       setLoading(false);
     }
