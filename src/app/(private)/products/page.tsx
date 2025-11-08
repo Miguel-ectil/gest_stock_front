@@ -66,12 +66,12 @@ export default function ProdutosPage() {
     <Box>
       <Card
         sx={{
-          border: '2px solid #e0e0e0',
+          border: "2px solid #e0e0e0",
           borderRadius: 2.5,
           mt: 1,
           backgroundColor: "#f4f6f8",
           boxShadow: 0,
-          p: 2,
+          p: { xs: 1.5, sm: 2, md: 3 }
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
@@ -126,7 +126,6 @@ export default function ProdutosPage() {
                     />
                   </TableCell>
                   <TableCell align="center">
-                    <Stack direction="row" spacing={1}>
                       <Tooltip title="Editar" arrow>
                         <IconButton
                           color="default"
@@ -157,7 +156,6 @@ export default function ProdutosPage() {
                           Inativar
                         </Button>
                       )}
-                    </Stack>
                   </TableCell>
                 </TableRow>
               ))}
