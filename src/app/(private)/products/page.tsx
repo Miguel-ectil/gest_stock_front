@@ -10,28 +10,28 @@ import {
   Box,
   Button,
   Card,
-  CardContent,
   Chip,
-  Grid,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   Typography,
-  ToggleButton,
-  ToggleButtonGroup,
-  Paper,
-  Stack
+  useTheme,
+  Stack,
+  Divider,
+  useMediaQuery,
+  TextField
 } from "@mui/material";
+import { displayMessage } from "@/utils/displayMessage";
 
 export default function ProdutosPage() {
-  const { user } = useAuth();
+  const theme = useTheme();
   const productService = ProductService();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"table" | "card">("table");
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
 
   // Estados de paginação e filtro
   const [page, setPage] = useState(0);
@@ -39,11 +39,12 @@ export default function ProdutosPage() {
   const [filter, setFilter] = useState("");
 
   const getProdutos = async () => {
+    setLoading(true)
     try {
       const resp = await productService.listProducts();
       setProducts(resp.data);
     } catch (error) {
-      console.error("Erro ao carregar produtos", error);
+      displayMessage("Erro", "Ocorreu algum erro ao tentar trazer os produtos.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
@@ -52,8 +53,6 @@ export default function ProdutosPage() {
   useEffect(() => {
     getProdutos()
   }, [])
-
-  if (loading) return <Typography>Carregando produtos...</Typography>;
 
   return (
     <Box>
@@ -67,102 +66,54 @@ export default function ProdutosPage() {
           p: 2,
         }}
       >
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h4" color="text.secondary">Produtos</Typography>
-          <Stack direction="row" spacing={2}>
-            <ToggleButtonGroup
-              value={viewMode}
-              exclusive
-              onChange={(_, newMode) => newMode && setViewMode(newMode)}
-              size="small"
-            >
-              <ToggleButton value="table">Tabela</ToggleButton>
-              <ToggleButton value="card">Cards</ToggleButton>
-            </ToggleButtonGroup>
+          <Stack>
             <Button variant="contained" color="success" component={Link} href="/product/22">
               Novo Produto
             </Button>
           </Stack>
         </Box>
-
-        {viewMode === "table" ? (
-          <Box >
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center" sx={{ width: '16%' }}>Nome</TableCell>
-                  <TableCell align="center" sx={{ width: '16%' }}>Preço</TableCell>
-                  <TableCell align="center" sx={{ width: '16%' }}>Quantidade</TableCell>
-                  <TableCell align="center" sx={{ width: '16%' }}>Status</TableCell>
-                  <TableCell align="center" sx={{ width: '16%' }}>Ações</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id} hover>
-                    <TableCell align="center">{product.name}</TableCell>
-                    <TableCell align="center">R$ {product.preco.toFixed(2)}</TableCell>
-                    <TableCell align="center">{product.quantidade}</TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={product.status ? "Ativo" : "Inativo"}
-                        color={product.status ? "success" : "error"}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      <Stack direction="row" spacing={1}>
-                        <Button
-                          variant="contained"
-                          color="warning"
-                          size="small"
-                          component={Link}
-                          href={`/produtos/${product.id}/editar`}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="info"
-                          size="small"
-                          component={Link}
-                          href={`/produtos/${product.id}`}
-                        >
-                          Detalhes
-                        </Button>
-                        {product.status === "Ativo" && (
-                          <Button
-                            variant="contained"
-                            color="error"
-                            size="small"
-                          // onClick={() => handleInactivate(product.id)}
-                          >
-                            Inativar
-                          </Button>
-                        )}
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Box>
-        ) : (
-          <Grid container spacing={3}>
-            {products.map((product) => (
-              <Grid item xs={12} sm={6} md={4} key={product.id}>
-                <Card variant="outlined" sx={{ transition: "0.3s", "&:hover": { boxShadow: 6 } }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>{product.name}</Typography>
-                    <Typography>Preço: R$ {product.preco.toFixed(2)}</Typography>
-                    <Typography>Quantidade: {product.quantidade}</Typography>
+        <Divider sx={{ mb: 2 }} />
+        <Box mb={2} display="flex" justifyContent={isMobile ? "center" : "flex-end"}>
+          <TextField
+            size="small"
+            placeholder="Filtrar por Nome ou Peso Máximo"
+            label="Filtrar"
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setPage(0);
+            }}
+            sx={{ width: '300px' }}
+          />
+        </Box>
+        <Box>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center" sx={{ width: '16%' }}>Nome</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Preço</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Quantidade</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Status</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Ações</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id} hover>
+                  <TableCell align="center">{product.name}</TableCell>
+                  <TableCell align="center">R$ {product.preco.toFixed(2)}</TableCell>
+                  <TableCell align="center">{product.quantidade}</TableCell>
+                  <TableCell align="center">
                     <Chip
                       label={product.status ? "Ativo" : "Inativo"}
                       color={product.status ? "success" : "error"}
                       size="small"
-                      sx={{ mt: 1 }}
                     />
-                    <Stack direction="row" spacing={1} mt={2}>
+                  </TableCell>
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1}>
                       <Button
                         variant="contained"
                         color="warning"
@@ -192,12 +143,12 @@ export default function ProdutosPage() {
                         </Button>
                       )}
                     </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
       </Card>
     </Box>
   );
