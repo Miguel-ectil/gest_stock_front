@@ -1,11 +1,14 @@
 import { AxiosResponse } from "axios";
 import { httpClient } from "../config/axios";
 
-const Url = "/api/products";
+const Url = "/api";
 
 export const ProductService = () => {
   const listProducts = async (): Promise<AxiosResponse<any>> => {
-    return await httpClient.get(Url);
+    const url = `${Url}/products`
+    const resposta: AxiosResponse<any> = await httpClient.get(url);
+    return resposta;
+
   };
   
   const getProduct = async (id: number): Promise<AxiosResponse<any>> => {
