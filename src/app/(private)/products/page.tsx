@@ -6,92 +6,150 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface";
 
+import {
+  Box,
+  Button,
+  Card,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+  Stack,
+  Divider,
+  useMediaQuery,
+  TextField
+} from "@mui/material";
+import { displayMessage } from "@/utils/displayMessage";
+
 export default function ProdutosPage() {
-  const { user } = useAuth();
+  const theme = useTheme();
+  const productService = ProductService();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const productService = ProductService();
-  
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await productService.listProducts();
-        setProducts(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    if (user) fetchProducts();
-  }, [user]);
 
-  const handleInactivate = async (id: number) => {
+  // Estados de paginação e filtro
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10)
+  const [filter, setFilter] = useState("");
+
+  const getProdutos = async () => {
+    setLoading(true)
     try {
-      await productService.inactivateProduct(id);
-      setProducts((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, status: "Inativo" } : p))
-      );
-    } catch (err) {
-      console.error(err);
+      const resp = await productService.listProducts();
+      setProducts(resp.data);
+    } catch (error) {
+      displayMessage("Erro", "Ocorreu algum erro ao tentar trazer os produtos.", "error", false, false, false, 3000);
+    } finally {
+      setLoading(false);
     }
   };
-  return (
-    <div className=" p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-gray-500 dark:text-gray-400">Produtos</h1>
-        <Link
-          href="/product/22"
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
-        >
-          Novo Produto
-        </Link>
-      </div>
 
-      <table className="w-full table-auto border border-gray-200 dark:border-gray-700">
-        <thead>
-          <tr className="text-gray-500 dark:text-gray-400">
-            <th className="px-4 py-2 border-b">Nome</th>
-            <th className="px-4 py-2 border-b">Preço</th>
-            <th className="px-4 py-2 border-b">Quantidade</th>
-            <th className="px-4 py-2 border-b">Status</th>
-            <th className="px-4 py-2 border-b">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-900">
-              <td className="px-4 py-2 border-b">{product.nome}</td>
-              <td className="px-4 py-2 border-b">R$ {product.preco.toFixed(2)}</td>
-              <td className="px-4 py-2 border-b">{product.quantidade}</td>
-              <td className="px-4 py-2 border-b">{product.status}</td>
-              <td className="px-4 py-2 border-b flex gap-2">
-                <Link
-                  href={`/produtos/${product.id}/editar`}
-                  className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                >
-                  Editar
-                </Link>
-                <Link
-                  href={`/produtos/${product.id}`}
-                  className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  Detalhes
-                </Link>
-                {product.status === "Ativo" && (
-                  <button
-                    onClick={() => handleInactivate(product.id)}
-                    className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                  >
-                    Inativar
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+  useEffect(() => {
+    getProdutos()
+  }, [])
+
+  return (
+    <Box>
+      <Card
+        sx={{
+          border: '2px solid #e0e0e0',
+          borderRadius: 2.5,
+          mt: 1,
+          backgroundColor: "#f4f6f8",
+          boxShadow: 0,
+          p: 2,
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+          <Typography variant="h4" color="text.secondary">Produtos</Typography>
+          <Stack>
+            <Button variant="contained" color="success" component={Link} href="/product/22">
+              Novo Produto
+            </Button>
+          </Stack>
+        </Box>
+        <Divider sx={{ mb: 2 }} />
+        <Box mb={2} display="flex" justifyContent={isMobile ? "center" : "flex-end"}>
+          <TextField
+            size="small"
+            placeholder="Filtrar por Nome ou Peso Máximo"
+            label="Filtrar"
+            value={filter}
+            onChange={(e) => {
+              setFilter(e.target.value);
+              setPage(0);
+            }}
+            sx={{ width: '300px' }}
+          />
+        </Box>
+        <Box>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell align="center" sx={{ width: '16%' }}>Nome</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Preço</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Quantidade</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Status</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}>Ações</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {products.map((product) => (
+                <TableRow key={product.id} hover>
+                  <TableCell align="center">{product.name}</TableCell>
+                  <TableCell align="center">R$ {product.preco.toFixed(2)}</TableCell>
+                  <TableCell align="center">{product.quantidade}</TableCell>
+                  <TableCell align="center">
+                    <Chip
+                      label={product.status ? "Ativo" : "Inativo"}
+                      color={product.status ? "success" : "error"}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell align="center">
+                    <Stack direction="row" spacing={1}>
+                      <Button
+                        variant="contained"
+                        color="warning"
+                        size="small"
+                        component={Link}
+                        href={`/produtos/${product.id}/editar`}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="info"
+                        size="small"
+                        component={Link}
+                        href={`/produtos/${product.id}`}
+                      >
+                        Detalhes
+                      </Button>
+                      {product.status === "Ativo" && (
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                        // onClick={() => handleInactivate(product.id)}
+                        >
+                          Inativar
+                        </Button>
+                      )}
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Box>
+      </Card>
+    </Box>
   );
 }

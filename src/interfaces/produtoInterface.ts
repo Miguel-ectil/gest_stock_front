@@ -1,6 +1,6 @@
 export interface Product {
     id: number;
-    nome: string;
+    name: string;
     preco: number;
     quantidade: number;
     status: "Ativo" | "Inativo";

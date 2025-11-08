@@ -1,77 +1,120 @@
 "use client";
+import { useEffect, useState } from "react";
+import { Button, TextField, Box, Typography, Paper, Avatar } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { useAuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+
 export default function LoginPage() {
-    const router = useRouter();
+  const router = useRouter();
+  const { user, login, loading } = useAuthContext(); 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    function handleLogin() {
-        localStorage.setItem("user", "true");
-        router.push("/");
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard"); // redireciona se já estiver logado
     }
-    return (
-        <div className="flex min-h-screen items-center justify-center">{/*bg-zinc-50 dark:bg-zinc-950*/}
-            <main
-                className="
-          flex w-full max-w-md flex-col items-center 
-          rounded-xl border border-zinc-200 bg-white 
-          p-10 shadow-xl
-          dark:border-zinc-800 dark:bg-zinc-900
-          transition-colors
-        "
-            >                {/* <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                    Bem-vindo de volta!
-                </h1> */}
-                <div className="bg-white mb-6 flex items-center justify-center rounded-lg p-2 shadow-md dark:bg-zinc-800">
-                    <Image alt="Logo da empresa" src="/imgs/logo_gestao.png" width={240} height={140} />
-                </div>
-                {/* Formulário */}
-                <form className="w-full space-y-5">
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                        >
-                            E-mail
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            placeholder="seu@email.com"
-                            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
-                        />
-                    </div>
+  }, [user, loading, router]);
 
-                    <div className="space-y-2">
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-                        >
-                            Senha
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            placeholder="••••••••"
-                            className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
-                        />
-                    </div>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await login({ email, password }); 
+  };
+  if (loading || user) return <p className="p-20"></p>;
 
-                    <button
-                        onClick={handleLogin}
-                        className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
-                    >
-                        Entrar
-                    </button>
-                </form>
+  return (
+    <Box
+      display="flex"
+      minHeight="100vh"
+      alignItems="center"
+      justifyContent="center"
+      sx={{
+        background: "linear-gradient(135deg, #3f51b5 30%, #2196f3 90%)",
+      }}
+    >
+      <Paper
+        elevation={6}
+        sx={{
+          width: "100%",
+          maxWidth: 400,
+          p: 5,
+          borderRadius: 3,
+          textAlign: "center",
+          backdropFilter: "blur(10px)",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+        }}
+      >
+        <Avatar
+          sx={{
+            bgcolor: "primary.main",
+            width: 56,
+            height: 56,
+            mx: "auto",
+            mb: 2,
+          }}
+        >
+          <LockOutlinedIcon fontSize="large" />
+        </Avatar>
 
-                {/* Links de ajuda */}
-                <div className="mt-6 text-sm text-zinc-600 dark:text-zinc-400">
-                    <span className="mx-1.5">Não tem conta?</span>
-                    <a href="/register" className="hover:underline text-blue-400">
-                      Criar uma conta
-                    </a>
-                </div>
-            </main>
-        </div>
-    );
+        <Typography variant="h5" fontWeight={600} mb={3}>
+          Bem-vindo de volta!
+        </Typography>
+
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="E-mail"
+            variant="outlined"
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            fullWidth
+            label="Senha"
+            type="password"
+            variant="outlined"
+            margin="normal"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            type="submit"
+            disabled={loading}
+            sx={{
+              mt: 3,
+              py: 1.3,
+              fontSize: "1rem",
+              textTransform: "none",
+              borderRadius: 2,
+              transition: "0.3s",
+              ":hover": {
+                backgroundColor: "#1976d2",
+                transform: "scale(1.02)",
+              },
+            }}
+          >
+            {loading ? "Entrando..." : "Entrar"}
+          </Button>
+
+          <Typography variant="body2" color="text.secondary" mt={3}>
+            Não tem conta?{" "}
+            <Typography
+              component="span"
+              color="primary"
+              sx={{ cursor: "pointer", fontWeight: 500 }}
+            >
+              Cadastrar
+            </Typography>
+          </Typography>
+        </Box>
+      </Paper>
+    </Box>
+  );
 }
