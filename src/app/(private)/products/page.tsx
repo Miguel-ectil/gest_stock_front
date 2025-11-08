@@ -6,20 +6,20 @@ import { useAuth } from "@/hooks/useAuth";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface";
 import {
-  Box, Button, Tooltip, IconButton, Card, Chip, Typography, TextField, 
+  Box, Button, Tooltip, IconButton, Card, Chip, Typography, TextField,
   Table,
   TableBody, TableCell, TableHead, TableRow,
   useTheme,
   Stack,
   Divider,
   useMediaQuery,
-  
+
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import { } from "@mui/material";
-import { displayMessage } from "@/utils/displayMessage";
-import { ModalAdicionarProduto } from "./productsModal"; 
+import { displayMessage } from "@/components/displayMessage";
+import { ModalAdicionarProduto } from "./productsModal";
 
 export default function ProdutosPage() {
   const theme = useTheme();
@@ -27,7 +27,7 @@ export default function ProdutosPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  
+
   // Estados do modal
   const [openModal, setOpenModal] = useState(false);
   const [produtoIdSelecionado, setProdutoIdSelecionado] = useState<number | null>(null);
@@ -126,36 +126,36 @@ export default function ProdutosPage() {
                     />
                   </TableCell>
                   <TableCell align="center">
-                      <Tooltip title="Editar" arrow>
-                        <IconButton
-                          color="default"
-                          size="small"
-                          onClick={() => handleOpenModal(product.id)}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
+                    <Tooltip title="Editar" arrow>
+                      <IconButton
+                        color="default"
+                        size="small"
+                        onClick={() => handleOpenModal(product.id)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
 
-                      <Tooltip title="Detalhes" arrow>
-                        <IconButton
-                          color="info"
-                          component={Link}
-                          href={`/produtos/${product.id}`}
-                          size="small"
-                        >
-                          <InfoIcon />
-                        </IconButton>
-                      </Tooltip>
-                      {product.status === "Ativo" && (
-                        <Button
-                          variant="contained"
-                          color="error"
-                          size="small"
-                        // onClick={() => handleInactivate(product.id)}
-                        >
-                          Inativar
-                        </Button>
-                      )}
+                    <Tooltip title="Detalhes" arrow>
+                      <IconButton
+                        color="info"
+                        component={Link}
+                        href={`/produtos/${product.id}`}
+                        size="small"
+                      >
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                    {product.status === "Ativo" && (
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                      // onClick={() => handleInactivate(product.id)}
+                      >
+                        Inativar
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -166,7 +166,7 @@ export default function ProdutosPage() {
       <ModalAdicionarProduto
         open={openModal}
         onClose={handleCloseModal}
-        produtoId={produtoIdSelecionado} 
+        produtoId={produtoIdSelecionado}
         onSuccess={() => {
           getProdutos();
         }}

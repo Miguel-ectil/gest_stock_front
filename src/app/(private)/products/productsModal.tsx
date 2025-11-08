@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, DialogTitle, Typography, TextField, Button, MenuItem, Box, Switch, FormControlLabel } from "@mui/material";
-import { displayMessage } from "@/utils/displayMessage";
+import { displayMessage } from "@/components/displayMessage";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface"
 import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ModalAdicionarProdutoProps {
   open: boolean;
@@ -19,6 +20,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   onSuccess
 }) => {
   const productService = ProductService();
+  const { user, logout } = useAuth();
 
   // Estado dos campos
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,6 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const [name, setName] = useState("");
   const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState<number | "">("");
-  const [status, setStatus] = useState(false);
   const [imgFile, setImgFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string | null>(null);
 
@@ -44,7 +45,6 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
       setName(resp.name);
       setPreco(resp.preco);
       setQuantidade(resp.quantidade);
-      setStatus(resp.status);
       setChecked(resp.status)
     } catch (error) {
       displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
@@ -63,7 +63,6 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
         setName("");
         setPreco("");
         setQuantidade("");
-        setStatus(false);
         setImgFile(null);
         setImgPreview(null);
       }
@@ -73,7 +72,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const data = { id_vendedor: 1, name, preco, quantidade, status, imagem: null };
+      const data = { id_vendedor: user?.id, name, preco, quantidade, status: checked, imagem: null };
 
       if (currentProdutoId) {
         const resp = await productService.updateProduct(currentProdutoId, data);
@@ -104,7 +103,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
     }
   };
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
   };
 
@@ -176,11 +175,11 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
               inputProps={{ 'aria-label': 'controlled' }}
             />
           }
-          label={checked ? "Ativo" : "Inativo"} 
+          label={checked ? "Ativo" : "Inativo"}
         />
 
         <Box display="flex" justifyContent="flex-end">
-          <Button onClick={onClose} color="secondary" variant="outlined" sx={{ mr: 2 }} size="small">
+          <Button onClick={onClose} color="error" variant="outlined" sx={{ mr: 2 }} size="small">
             Cancelar
           </Button>
           <Button onClick={handleSubmit} size="small"

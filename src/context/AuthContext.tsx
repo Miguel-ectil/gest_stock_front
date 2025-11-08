@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth";
 import { AxiosResponse } from "axios";
-import { displayMessage } from "@/utils/displayMessage";
+import { displayMessage } from "@/components/displayMessage";
 
 interface User {
   id: number;

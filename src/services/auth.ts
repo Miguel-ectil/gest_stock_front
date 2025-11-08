@@ -1,4 +1,4 @@
-import { Axios, AxiosResponse } from "axios"
+import { AxiosResponse } from "axios"
 import { httpClient } from "../config/axios"
 
 const Url = "/user"
