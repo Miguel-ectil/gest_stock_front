@@ -1,11 +1,11 @@
 import { Axios, AxiosResponse } from "axios"
 import { httpClient } from "../config/axios"
 
-const Url = "/api"
+const Url = "/user"
 
 export const AuthService = () => {
   const login = async (data: any,): Promise<AxiosResponse<any>> => {
-    const url = `${Url}/user/login`
+    const url = `${Url}/login`
     const resposta: AxiosResponse<any> = await httpClient.post(url, data);
     return resposta;
   };

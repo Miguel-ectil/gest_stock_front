@@ -16,16 +16,6 @@ export default function DashboardPage() {
 
   return (
     <main>
-      {/* Cabeçalho */}
-      <header className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-200 dark:text-gray-600">
-          Bem-vindo, {user?.name ?? "Usuário"}!
-        </h1>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-        </div>
-      </header>
-
       {user?.token && (
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Seu token: <span className="font-mono text-gray-200 dark:text-gray-600">{user.token}</span>

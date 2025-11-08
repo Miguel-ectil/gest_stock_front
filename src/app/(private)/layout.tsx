@@ -28,7 +28,10 @@ export default function PrivateLayout({ children }: { children: React.ReactNode 
   return (
     <>
       <Layout>
-      {children}
+        {children}
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+        </div>
     </Layout >
     </>
   )

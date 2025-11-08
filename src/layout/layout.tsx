@@ -17,8 +17,8 @@ export default function Layout({ children }: DashboardLayoutProps) {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <div
-        className={`flex flex-col flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-20"
-          }`}
+        className={`flex flex-col flex-1 transition-all duration-300
+          ${isSidebarOpen ? "ml-64 sm:ml-64 ml-0" : "ml-20 sm:ml-20 ml-0"}`}
       >
         <Header />
         <main className="flex-1 p-4 overflow-y-auto">{children}</main>
