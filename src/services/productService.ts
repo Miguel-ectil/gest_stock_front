@@ -12,11 +12,15 @@ export const ProductService = () => {
   };
   
   const getProduct = async (id: number): Promise<AxiosResponse<any>> => {
-    return await httpClient.get(`${Url}/${id}`);
+    const url = `${Url}/products/${id}`
+    const resposta: AxiosResponse<any> = await httpClient.get(url);
+    return resposta.data;
   };
 
     const createProduct = async (data: any): Promise<AxiosResponse<any>> => {
-    return await httpClient.post(Url, data);
+      const url = `${Url}/products`
+      const resposta: AxiosResponse<any> = await httpClient.get(url);
+      return resposta;
   };
 
     const updateProduct = async (id: number, data: any): Promise<AxiosResponse<any>> => {

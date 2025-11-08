@@ -168,6 +168,7 @@ export default function ProdutosPage() {
       <ModalAdicionarProduto
         open={openModal}
         onClose={handleCloseModal}
+        produtoId={produtoIdSelecionado} 
         onSuccess={() => {
           getProdutos();
         }}
