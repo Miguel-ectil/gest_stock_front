@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Dialog, DialogTitle, Typography } from "@mui/material";
+import { displayMessage } from "@/utils/displayMessage";
 
 interface ModalAdicionarProdutoProps {
   open: boolean;
@@ -14,7 +15,26 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   produtoId,
   onSuccess
 }) => {
+  // Estado dos campos
+  const [loading, setLoading] = useState(true);
   const [currentProdutoId, setCurrentProdutoId] = useState<number | null>(null);
+  const [name, setName] = useState(true);
+  const [preco, setPreco] = useState(true);
+  const [quantidade, setQuantidade] = useState(true);
+  const [status, setStatus] = useState(true);
+
+
+  const buscarProduto = async (id: number) => {
+    setLoading(true);
+    try {
+      // const detalhes = await regrasService.obterRegra(id);
+
+    } catch (error) {
+      displayMessage("Erro", "Falha ao buscar detalhes da regra.", "error", false, false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setCurrentProdutoId(produtoId ?? null);
