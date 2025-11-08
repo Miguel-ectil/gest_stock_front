@@ -104,13 +104,13 @@ export default function LoginPage() {
           </Button>
 
           <Typography variant="body2" color="text.secondary" mt={3}>
-            Esqueceu sua senha?{" "}
+            Não tem conta?{" "}
             <Typography
               component="span"
               color="primary"
               sx={{ cursor: "pointer", fontWeight: 500 }}
             >
-              Recuperar
+              Cadastrar
             </Typography>
           </Typography>
         </Box>
