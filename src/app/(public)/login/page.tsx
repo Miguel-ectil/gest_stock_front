@@ -14,13 +14,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && user) {
-      router.push("/dashboard"); // redireciona se já estiver logado
+      router.push("/dashboard"); 
     }
   }, [user, loading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login({ email, password }); 
+    const resp =await login({ email, password }); 
   };
   if (loading || user) return <p className="p-20"></p>;
 
