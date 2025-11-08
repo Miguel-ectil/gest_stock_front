@@ -5,25 +5,21 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface";
-
 import {
-  Box,
-  Button,
-  Card,
-  Chip,
+  Box, Button, Tooltip, IconButton, Card, Chip, Typography, TextField, 
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
+  TableBody, TableCell, TableHead, TableRow,
   useTheme,
   Stack,
   Divider,
   useMediaQuery,
-  TextField
+  
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
+import { } from "@mui/material";
 import { displayMessage } from "@/utils/displayMessage";
+import { ModalAdicionarProduto } from "./productsModal"; 
 
 export default function ProdutosPage() {
   const theme = useTheme();
@@ -31,7 +27,10 @@ export default function ProdutosPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  
+  // Estados do modal
+  const [openModal, setOpenModal] = useState(false);
+  const [produtoIdSelecionado, setProdutoIdSelecionado] = useState<number | null>(null);
 
   // Estados de paginação e filtro
   const [page, setPage] = useState(0);
@@ -54,6 +53,15 @@ export default function ProdutosPage() {
     getProdutos()
   }, [])
 
+  const handleOpenModal = (id?: number | null) => {
+    setProdutoIdSelecionado(id ?? null);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setProdutoIdSelecionado(null);
+  }
   return (
     <Box>
       <Card
@@ -69,7 +77,11 @@ export default function ProdutosPage() {
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h4" color="text.secondary">Produtos</Typography>
           <Stack>
-            <Button variant="contained" color="success" component={Link} href="/product/22">
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => handleOpenModal(null)}
+            >
               Novo Produto
             </Button>
           </Stack>
@@ -92,11 +104,12 @@ export default function ProdutosPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align="center" sx={{ width: '16%' }}>Nome</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Preço</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Quantidade</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Status</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Ações</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Nome</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Preço</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Quantidade</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Status</strong></TableCell>
+
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Ações</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -114,24 +127,26 @@ export default function ProdutosPage() {
                   </TableCell>
                   <TableCell align="center">
                     <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="contained"
-                        color="warning"
-                        size="small"
-                        component={Link}
-                        href={`/produtos/${product.id}/editar`}
-                      >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="info"
-                        size="small"
-                        component={Link}
-                        href={`/produtos/${product.id}`}
-                      >
-                        Detalhes
-                      </Button>
+                      <Tooltip title="Editar" arrow>
+                        <IconButton
+                          color="default"
+                          size="small"
+                          onClick={() => handleOpenModal(product.id)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Detalhes" arrow>
+                        <IconButton
+                          color="info"
+                          component={Link}
+                          href={`/produtos/${product.id}`}
+                          size="small"
+                        >
+                          <InfoIcon />
+                        </IconButton>
+                      </Tooltip>
                       {product.status === "Ativo" && (
                         <Button
                           variant="contained"
@@ -150,6 +165,13 @@ export default function ProdutosPage() {
           </Table>
         </Box>
       </Card>
+      <ModalAdicionarProduto
+        open={openModal}
+        onClose={handleCloseModal}
+        onSuccess={() => {
+          getProdutos();
+        }}
+      />
     </Box>
   );
 }
