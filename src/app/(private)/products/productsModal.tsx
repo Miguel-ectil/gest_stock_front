@@ -3,6 +3,7 @@ import { Dialog, DialogTitle, Typography, TextField, Button, MenuItem, Box, Swit
 import { displayMessage } from "@/utils/displayMessage";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface"
+import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
 interface ModalAdicionarProdutoProps {
   open: boolean;
@@ -21,7 +22,8 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
 
   // Estado dos campos
   const [loading, setLoading] = useState(false);
-  const [currentProdutoId, setCurrentProdutoId] = useState<number | null>(null);
+  const [currentProdutoId, setCurrentProdutoId] = useState(produtoId);
+
   const [name, setName] = useState("");
   const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState<number | "">("");
@@ -43,6 +45,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
       setPreco(resp.preco);
       setQuantidade(resp.quantidade);
       setStatus(resp.status);
+      setChecked(resp.status)
     } catch (error) {
       displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
     } finally {
@@ -73,18 +76,17 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
       const data = { id_vendedor: 1, name, preco, quantidade, status, imagem: null };
 
       if (currentProdutoId) {
-        await productService.updateProduct(currentProdutoId, data);
-        displayMessage("Sucesso", "Produto atualizado com sucesso!", "success", false, false, false, 3000);
+        const resp = await productService.updateProduct(currentProdutoId, data);
+        displayMessage("Sucesso", resp.data.mensagem || "Produto atualizado com sucesso!", "success", false, false, false, 3000);
       } else {
         const resp = await productService.createProduct(data);
-        console.log(resp)
-        displayMessage("Sucesso", "Produto cadastrado com sucesso!", "success", false, false, false, 3000);
+        displayMessage("Sucesso", resp.data.mensagem || "Produto cadastrado com sucesso!", "success", false, false, false, 3000);
       }
 
       onSuccess?.();
       onClose();
     } catch (error) {
-      displayMessage("Erro", "Falha ao salvar o produto.", "error", false, false);
+      displayMessage("Erro", "Falha ao salvar o produto.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
@@ -102,7 +104,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
     }
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: any) => {
     setChecked(event.target.checked);
   };
 
@@ -174,7 +176,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
               inputProps={{ 'aria-label': 'controlled' }}
             />
           }
-          label="Ativo"
+          label={checked ? "Ativo" : "Inativo"} 
         />
 
         <Box display="flex" justifyContent="flex-end">

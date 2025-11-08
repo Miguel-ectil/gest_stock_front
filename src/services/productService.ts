@@ -24,8 +24,8 @@ export const ProductService = () => {
   };
 
   const updateProduct = async (id: number, data: any): Promise<AxiosResponse<any>> => {
-    const url = `${Url}/products/${id}/`
-    const resposta: AxiosResponse<any> = await httpClient.post(url, data);
+    const url = `${Url}/products/${id}`
+    const resposta: AxiosResponse<any> = await httpClient.put(url, data);
     return resposta;
   };
 
