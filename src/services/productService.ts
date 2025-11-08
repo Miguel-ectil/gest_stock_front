@@ -19,12 +19,14 @@ export const ProductService = () => {
 
     const createProduct = async (data: any): Promise<AxiosResponse<any>> => {
       const url = `${Url}/products`
-      const resposta: AxiosResponse<any> = await httpClient.get(url);
+      const resposta: AxiosResponse<any> = await httpClient.post(url, data);
       return resposta;
   };
 
-    const updateProduct = async (id: number, data: any): Promise<AxiosResponse<any>> => {
-    return await httpClient.put(`${Url}/${id}`, data);
+  const updateProduct = async (id: number, data: any): Promise<AxiosResponse<any>> => {
+    const url = `${Url}/products/${id}/`
+    const resposta: AxiosResponse<any> = await httpClient.post(url, data);
+    return resposta;
   };
 
     const inactivateProduct = async (id: number): Promise<AxiosResponse<any>> => {
