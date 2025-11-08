@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Dialog, DialogTitle, Typography, TextField, Button, MenuItem, Box } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Dialog, DialogTitle, Typography, TextField, Button, MenuItem, Box, Switch, FormControlLabel } from "@mui/material";
 import { displayMessage } from "@/utils/displayMessage";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface"
@@ -23,11 +23,15 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const [loading, setLoading] = useState(false);
   const [currentProdutoId, setCurrentProdutoId] = useState<number | null>(null);
   const [name, setName] = useState("");
-  const [preco, setPreco] = useState<number | "">("");
+  const [preco, setPreco] = useState("");
   const [quantidade, setQuantidade] = useState<number | "">("");
-  const [status, setStatus] = useState<string>("ativo");
+  const [status, setStatus] = useState(false);
   const [imgFile, setImgFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string | null>(null);
+
+  // Estados do switch
+  const [checked, setChecked] = React.useState(true);
+
 
   // Buscar produto caso seja edição
   const buscarProduto = async (id: number) => {
@@ -52,12 +56,11 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
         setCurrentProdutoId(produtoId);
         buscarProduto(produtoId);
       } else {
-        // Resetar formulário
         setCurrentProdutoId(null);
         setName("");
         setPreco("");
         setQuantidade("");
-        setStatus("ativo");
+        setStatus(false);
         setImgFile(null);
         setImgPreview(null);
       }
@@ -67,14 +70,15 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const data = { name, preco, quantidade, status };
+      const data = { id_vendedor: 1, name, preco, quantidade, status, imagem: null };
 
       if (currentProdutoId) {
         await productService.updateProduct(currentProdutoId, data);
-        displayMessage("Sucesso", "Produto atualizado com sucesso!", "success", false, false);
+        displayMessage("Sucesso", "Produto atualizado com sucesso!", "success", false, false, false, 3000);
       } else {
-        await productService.createProduct(data);
-        displayMessage("Sucesso", "Produto cadastrado com sucesso!", "success", false, false);
+        const resp = await productService.createProduct(data);
+        console.log(resp)
+        displayMessage("Sucesso", "Produto cadastrado com sucesso!", "success", false, false, false, 3000);
       }
 
       onSuccess?.();
@@ -98,16 +102,20 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
     }
   };
 
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(event.target.checked);
+  };
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullWidth
-      maxWidth="md"
-      PaperProps={{ sx: { borderRadius: "10px", padding: 3 } }}
+      maxWidth="sm"
+      PaperProps={{ sx: { borderRadius: "10px", padding: 2 } }}
     >
-      <DialogTitle>
-        <Typography>
+      <DialogTitle sx={{ pt: 2 }}>
+        <Typography align="center" variant="h6" component="div">
           <strong>
             {currentProdutoId ? "Editar Produto" : "Cadastrar Novo Produto"}
           </strong>
@@ -133,40 +141,49 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
           value={name}
           onChange={(e) => setName(e.target.value)}
           fullWidth
+          size="small"
         />
 
-        <TextField
-          label="Preço"
-          type="number"
-          value={preco}
-          onChange={(e) => setPreco(Number(e.target.value))}
-          fullWidth
+        <Box display="flex" gap={2}>
+          <TextField
+            label="Preço"
+            type="number"
+            value={preco}
+            onChange={(e) => setPreco(e.target.value)}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+          <TextField
+            label="Quantidade"
+            type="number"
+            value={quantidade}
+            onChange={(e) => setQuantidade(Number(e.target.value))}
+            fullWidth
+            variant="outlined"
+            size="small"
+          />
+        </Box>
+
+        <FormControlLabel
+          control={
+            <Switch
+              checked={checked}
+              onChange={handleChange}
+              color="success"
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label="Ativo"
         />
 
-        <TextField
-          label="Quantidade"
-          type="number"
-          value={quantidade}
-          onChange={(e) => setQuantidade(Number(e.target.value))}
-          fullWidth
-        />
-
-        <TextField
-          select
-          label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          fullWidth
-        >
-          <MenuItem value="ativo">Ativo</MenuItem>
-          <MenuItem value="inativo">Inativo</MenuItem>
-        </TextField>
-
-        <Box display="flex" justifyContent="flex-end" mt={2}>
-          <Button onClick={onClose} color="secondary" variant="outlined" sx={{ mr: 2 }}>
+        <Box display="flex" justifyContent="flex-end">
+          <Button onClick={onClose} color="secondary" variant="outlined" sx={{ mr: 2 }} size="small">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained" disabled={loading}>
+          <Button onClick={handleSubmit} size="small"
+            color="success" variant="contained" disabled={loading}
+          >
             {loading ? "Salvando..." : "Salvar"}
           </Button>
         </Box>
