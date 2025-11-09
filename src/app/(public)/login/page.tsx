@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button, TextField, Box, Typography, Paper, Avatar } from "@mui/material";
+import { Button, TextField, Box, Typography, Paper, Avatar, Link } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useAuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     const resp =await login({ email, password }); 
   };
-  if (loading || user) return <p className="p-20"></p>;
+  // if (loading || user) return <p className="p-20"></p>;
 
   return (
     <Box
@@ -39,27 +40,20 @@ export default function LoginPage() {
         sx={{
           width: "100%",
           maxWidth: 400,
-          p: 5,
+          px: 5,
+          py: 2.5,
           borderRadius: 3,
           textAlign: "center",
           backdropFilter: "blur(10px)",
           backgroundColor: "rgba(255, 255, 255, 0.9)",
         }}
       >
-        <Avatar
-          sx={{
-            bgcolor: "primary.main",
-            width: 56,
-            height: 56,
-            mx: "auto",
-            mb: 2,
-          }}
-        >
-          <LockOutlinedIcon fontSize="large" />
-        </Avatar>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Image src="/imgs/logo_gestao_encur.png" alt="Logo" width={100} height={60} />
+        </Box>
 
-        <Typography variant="h5" fontWeight={600} mb={3}>
-          Bem-vindo de volta!
+        <Typography variant="h5" fontWeight={600} mt={1} mb={1}>
+         Entre com os seus dados!
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit}>
@@ -105,13 +99,15 @@ export default function LoginPage() {
 
           <Typography variant="body2" color="text.secondary" mt={3}>
             Não tem conta?{" "}
+            <Link href="/register">
             <Typography
               component="span"
               color="primary"
               sx={{ cursor: "pointer", fontWeight: 500 }}
             >
               Cadastrar
-            </Typography>
+              </Typography>
+            </Link>
           </Typography>
         </Box>
       </Paper>

@@ -1,131 +1,238 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Box, Button, Paper, Stack, TextField, Typography, Modal } from "@mui/material";
+import Link from "next/link";
+import { AuthService } from "@/services/auth";
+import { displayMessage } from "@/components/displayMessage";
+import { AxiosError } from "axios";
 
 export default function CadastroPage() {
   const router = useRouter();
+  const authService = AuthService();
 
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
     cnpj: "",
     email: "",
     celular: "",
     senha: "",
-    status: "Inativo",
   });
 
-  const [loading, setLoading] = useState(false);
+  // controle do modal
+  const [openModal, setOpenModal] = useState(false);
+
+  const postUser = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        name: formData.nome,
+        cnpj: formData.cnpj,
+        email: formData.email,
+        celular: formData.celular,
+        password: formData.senha,
+        status: false,
+      };
+
+      await authService.cadastrar(payload);
+
+      displayMessage("Sucesso", "Usuário cadastrado com sucesso!", "success", false, false, false, 3000);
+      setOpenModal(true);
+
+    } catch (error) {
+      displayMessage("Erro", "Falha ao cadastrar o usuário.", "error", false, false, false, 3000);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  async function handleCadastro() {
-    setLoading(true);
+  const confirmUser = async () => {
     try {
-      console.log("Dados enviados:", formData);
-      // Aqui você poderia chamar: await AuthService.register(formData)
-      // Por exemplo: const res = await AuthService.register(formData)
-      router.push("/"); // redireciona após cadastro
-    } catch (err) {
-      console.error("Erro no cadastro:", err);
-    } finally {
-      setLoading(false);
+      displayMessage("Sucesso", "Login confirmado!", "success", false, false, false, 3000);
+      setOpenModal(false);
+      router.push("/login");
+    } catch (__err) {
+      displayMessage("Erro", "Código inválido ou expirado.", "error", false, false, false, 3000);
     }
-  }
+  };
+
+  const [codigo, setCodigo] = useState<string[]>(["", "", "", ""]);
+  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
+
+  const handleChangeCode = (index: number, value: string) => {
+    if (/^\d?$/.test(value)) {
+      const newCodigo = [...codigo];
+      newCodigo[index] = value;
+      setCodigo(newCodigo);
+
+      if (value && index < 3) {
+        inputsRef.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLElement> 
+  ) => {
+    if (e.key === "Backspace") {
+      const target = e.target as HTMLInputElement;
+      if (!target.value && index > 0) {
+        inputsRef.current[index - 1]?.focus();
+      }
+    }
+  };
+
 
   return (
-    <div className="flex min-h-screen items-center justify-center"> {/*bg-zinc-50 dark:bg-zinc-950*/}
-      <main className="flex w-full max-w-md flex-col items-center rounded-xl border border-zinc-200 bg-white p-10 shadow-xl dark:border-zinc-800 dark:bg-zinc-900 sm:p-12">
-        <h1 className="mb-6 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Cadastro de Mini Mercado
-        </h1>
+    <Box
+      display="flex"
+      minHeight="100vh"
+      alignItems="center"
+      justifyContent="center"
+      sx={{
+        background: "linear-gradient(135deg, #3f51b5 30%, #2196f3 90%)",
+        p: 2,
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          width: "100%",
+          maxWidth: 600,
+          borderRadius: 2,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+        }}
+      >
+        <Typography variant="h5" fontWeight="bold" mb={2} textAlign="center">
+          Cadastro Usuário
+        </Typography>
 
-        <p className="mb-8 text-center text-zinc-600 dark:text-zinc-400">
-          Preencha os dados abaixo para criar sua conta
-        </p>
+        <Stack spacing={2}>
+          <TextField
+            label="Nome"
+            name="nome"
+            value={formData.nome}
+            onChange={handleChange}
+            fullWidth
+          />
+          <TextField
+            label="CNPJ"
+            name="cnpj"
+            value={formData.cnpj}
+            onChange={handleChange}
+            placeholder="00.000.000/0000-00"
+            fullWidth
+          />
+          <TextField
+            label="E-mail"
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            fullWidth
+          />
 
-        <div className="w-full space-y-5">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Nome
-            </label>
-            <input
-              type="text"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              placeholder="Nome do mini mercado"
-              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              CNPJ
-            </label>
-            <input
-              type="text"
-              name="cnpj"
-              value={formData.cnpj}
-              onChange={handleChange}
-              placeholder="00.000.000/0000-00"
-              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              E-mail
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="seu@email.com"
-              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Celular
-            </label>
-            <input
+          <Box display="flex" gap={2}>
+            <TextField
+              label="Celular"
               type="tel"
               name="celular"
               value={formData.celular}
               onChange={handleChange}
               placeholder="(00) 00000-0000"
-              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
+              fullWidth
+              size="small"
             />
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Senha
-            </label>
-            <input
+            <TextField
+              label="Senha"
               type="password"
               name="senha"
               value={formData.senha}
               onChange={handleChange}
-              placeholder="••••••••"
-              className="w-full rounded-md border border-zinc-300 bg-transparent px-3 py-2 text-sm text-zinc-900 placeholder-zinc-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-zinc-700 dark:text-zinc-100"
+              fullWidth
+              size="small"
             />
-          </div>
+          </Box>
 
-          <button
-            onClick={handleCadastro}
+          <Button
+            variant="contained"
+            color="success"
+            onClick={postUser}
             disabled={loading}
-            className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+            fullWidth
+            sx={{ mt: 1 }}
           >
             {loading ? "Cadastrando..." : "Cadastrar"}
-          </button>
-        </div>
-      </main>
-    </div>
+          </Button>
+
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            mt={3}
+            textAlign="center"
+          >
+            Já possui uma conta?{" "}
+            <Link href="/login" style={{ textDecoration: "none" }}>
+              <Typography component="span" color="primary" sx={{ cursor: "pointer", fontWeight: 500 }}>
+                Login
+              </Typography>
+            </Link>
+          </Typography>
+        </Stack>
+      </Paper>
+
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            p: 4,
+            borderRadius: 2,
+            width: 400,
+            boxShadow: 24,
+          }}
+        >
+          <Typography variant="h6" textAlign="center" mb={2}>
+            Confirme seu código
+          </Typography>
+
+          <Box display="flex" justifyContent="center" gap={2} mb={3}>
+            {codigo.map((value, index) => (
+              <TextField
+                key={index}
+                inputRef={(el) => (inputsRef.current[index] = el)}
+                value={value}
+                onChange={(e) => handleChangeCode(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                inputProps={{
+                  maxLength: 1,
+                  style: {
+                    textAlign: "center",
+                    fontSize: "1.5rem",
+                    width: "1rem",
+                    height: "1rem",
+                  },
+                }}
+              />
+            ))}
+          </Box>
+
+          <Button variant="contained" color="success" fullWidth onClick={confirmUser}>
+            Confirmar
+          </Button>
+        </Box>
+      </Modal>
+    </Box>
   );
 }
