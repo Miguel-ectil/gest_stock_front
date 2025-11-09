@@ -58,7 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       displayMessage("Sucesso", "Login efetuado com sucesso.", "success", false, false, false, 3000);
       router.push("/dashboard");
     } catch (err: unknown) {
-      displayMessage("Erro", "Falha no login. Verifique suas credenciais.", "error", false, false, false, 3000);
+      const errorMsg =
+        (err as any)?.response?.data?.erro ||
+        "Falha no login. Verifique suas credenciais.";
+
+      displayMessage("Erro", errorMsg, "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
