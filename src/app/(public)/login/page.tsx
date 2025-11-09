@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Button, TextField, Box, Typography, Paper, Avatar } from "@mui/material";
+import { Button, TextField, Box, Typography, Paper, Avatar, Link } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useAuthContext } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -46,20 +47,12 @@ export default function LoginPage() {
           backgroundColor: "rgba(255, 255, 255, 0.9)",
         }}
       >
-        <Avatar
-          sx={{
-            bgcolor: "primary.main",
-            width: 56,
-            height: 56,
-            mx: "auto",
-            mb: 2,
-          }}
-        >
-          <LockOutlinedIcon fontSize="large" />
-        </Avatar>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Image src="/imgs/logo_gestao_encur.png" alt="Logo" width={80} height={40} />
+        </Box>
 
         <Typography variant="h5" fontWeight={600} mb={3}>
-          Bem-vindo de volta!
+         Entre com os seus dados!
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit}>
@@ -105,13 +98,15 @@ export default function LoginPage() {
 
           <Typography variant="body2" color="text.secondary" mt={3}>
             Não tem conta?{" "}
+            <Link href="/register">
             <Typography
               component="span"
               color="primary"
               sx={{ cursor: "pointer", fontWeight: 500 }}
             >
               Cadastrar
-            </Typography>
+              </Typography>
+            </Link>
           </Typography>
         </Box>
       </Paper>
