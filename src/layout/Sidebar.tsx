@@ -75,7 +75,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
                         logout();
                         router.push("/login");
                     }}
-                    className="flex items-center gap-3 text-red-500 hover:text-red-600 transition-colors w-full"
+                    className="flex items-center gap-3 text-red-500 hover:text-red-600 transition-colors w-full cursor-pointer"
                 >
                     <LogOut size={20} />
                     {isOpen && <span>Sair</span>}
