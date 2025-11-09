@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogTitle, Typography, TextField, Button, MenuItem, Box, Switch, FormControlLabel } from "@mui/material";
 import { displayMessage } from "@/components/displayMessage";
 import { ProductService } from "@/services/productService";
-import { Product } from "@/interfaces/produtoInterface"
-import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
+import { ProductInput } from "@/interfaces/produtoInterface"
 import { useAuth } from "@/hooks/useAuth";
 
 interface ModalAdicionarProdutoProps {
@@ -20,7 +19,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   onSuccess
 }) => {
   const productService = ProductService();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   // Estado dos campos
   const [loading, setLoading] = useState(false);
@@ -72,14 +71,14 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const data = { id_vendedor: user?.id, name, preco, quantidade, status: checked, imagem: null };
+      const data: ProductInput = { id_vendedor: user?.id, name, preco, quantidade, status: checked, imagem: null };
 
       if (currentProdutoId) {
         const resp = await productService.updateProduct(currentProdutoId, data);
-        displayMessage("Sucesso", resp.data.mensagem || "Produto atualizado com sucesso!", "success", false, false, false, 3000);
+        displayMessage("Sucesso", "Produto atualizado com sucesso!", "success", false, false, false, 3000);
       } else {
         const resp = await productService.createProduct(data);
-        displayMessage("Sucesso", resp.data.mensagem || "Produto cadastrado com sucesso!", "success", false, false, false, 3000);
+        displayMessage("Sucesso", "Produto cadastrado com sucesso!", "success", false, false, false, 3000);
       }
 
       onSuccess?.();

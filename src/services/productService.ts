@@ -1,7 +1,7 @@
 // src/services/productService.ts
 import { AxiosResponse } from "axios";
 import { httpClient } from "../config/axios";
-import { Product, ProductResponse } from "@/interfaces/produtoInterface";
+import { Product, ProductInput, ApiResponse } from "@/interfaces/produtoInterface";
 
 const Url = "/api";
 
@@ -18,12 +18,12 @@ export const ProductService = () => {
     return resposta.data;
   };
 
-  const createProduct = async (data: Product): Promise<AxiosResponse<Product>> => {
+  const createProduct = async (data: ProductInput): Promise<AxiosResponse<Product>> => {
     const url = `${Url}/products`;
     return await httpClient.post<Product>(url, data);
   };
 
-  const updateProduct = async (id: number, data: Product): Promise<AxiosResponse<Product>> => {
+  const updateProduct = async (id: number, data: ProductInput): Promise<AxiosResponse<Product>> => {
     const url = `${Url}/products/${id}`;
     return await httpClient.put<Product>(url, data);
   };
