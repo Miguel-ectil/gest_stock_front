@@ -1,4 +1,7 @@
-import { AxiosResponse } from "axios";
+export interface Usuario {
+  id: number;
+  nome: string;
+}
 
 export interface LoginRequest {
   email: string;
@@ -6,14 +9,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
+  mensagem: string;
   token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
-
-export interface AuthServiceType {
-  login: (data: LoginRequest) => Promise<LoginResponse>;
+  usuario: Usuario;
 }
