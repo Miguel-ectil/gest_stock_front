@@ -5,18 +5,20 @@ import { LoginRequest, LoginResponse } from "../interfaces/interfaceAuth";
 const Url = "/user";
 
 export const AuthService = () => {
-  const login = async (
-    data: LoginRequest
-  ): Promise<AxiosResponse<LoginResponse>> => {
+  const login = async (data: LoginRequest): Promise<AxiosResponse<LoginResponse>> => {
     const url = `${Url}/login`;
-    const resposta: AxiosResponse<LoginResponse> = await httpClient.post(
-      url,
-      data
-    );
+    const resposta: AxiosResponse<LoginResponse> = await httpClient.post(url, data);
+    return resposta;
+  };
+  
+  const cadastrar = async (data: any): Promise<AxiosResponse<any>> => {
+    const url = `${Url}`;
+    const resposta: AxiosResponse = await httpClient.post(url, data);
     return resposta;
   };
 
   return {
     login,
+    cadastrar,
   };
 };
