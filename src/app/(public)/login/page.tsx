@@ -23,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     const resp =await login({ email, password }); 
   };
-  if (loading || user) return <p className="p-20"></p>;
+  // if (loading || user) return <p className="p-20"></p>;
 
   return (
     <Box
@@ -40,7 +40,8 @@ export default function LoginPage() {
         sx={{
           width: "100%",
           maxWidth: 400,
-          p: 5,
+          px: 5,
+          py: 2.5,
           borderRadius: 3,
           textAlign: "center",
           backdropFilter: "blur(10px)",
@@ -48,10 +49,10 @@ export default function LoginPage() {
         }}
       >
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Image src="/imgs/logo_gestao_encur.png" alt="Logo" width={80} height={40} />
+          <Image src="/imgs/logo_gestao_encur.png" alt="Logo" width={100} height={60} />
         </Box>
 
-        <Typography variant="h5" fontWeight={600} mb={3}>
+        <Typography variant="h5" fontWeight={600} mt={1} mb={1}>
          Entre com os seus dados!
         </Typography>
 
