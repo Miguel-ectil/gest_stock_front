@@ -5,11 +5,19 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth";
 import { AxiosResponse } from "axios";
+import { displayMessage } from "@/components/displayMessage";
+import { LoginRequest, LoginResponse } from "@/interfaces/interfaceAuth";
+
+interface User {
+  id: number;
+  nome: string;
+  token: string;
+}
 
 interface AuthContextType {
-  user: any | null;
+  user: User | null;
   loading: boolean;
-  login: (data: any) => Promise<void>;
+  login: (data: LoginRequest) => Promise<void>; // <--- Aqui substituímos o 'any'
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -17,16 +25,17 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const service = AuthService();
 
   useEffect(() => {
     const token = Cookies.get("token");
+    const storedUser = localStorage.getItem("user");
 
-    if (token) {
-      setUser({ token });
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
     } else {
       setUser(null);
     }
@@ -34,21 +43,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (data: any) => {
+  const login = async (data: LoginRequest) => {
     setLoading(true);
     try {
-      const response: AxiosResponse<{ token: string }> = await service.login(data);
+      const response: AxiosResponse<LoginResponse> = await service.login(data);
 
-      const token = response.data.token;
+      const { token, usuario } = response.data;
 
       Cookies.set("token", token, { expires: 1 });
+      const loggedUser: User = { ...usuario, token };
+      setUser(loggedUser);
+      localStorage.setItem("user", JSON.stringify(loggedUser));
 
-      setUser({ token });
-
+      displayMessage("Sucesso", "Login efetuado com sucesso.", "success", false, false, false, 3000);
       router.push("/dashboard");
-    } catch (err) {
-      console.error("❌ Erro ao logar:", err);
-      alert("Falha no login. Verifique suas credenciais.");
+    } catch (err: unknown) {
+      displayMessage("Erro", "Falha no login. Verifique suas credenciais.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
@@ -56,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = () => {
     Cookies.remove("token");
+    localStorage.removeItem("user");
     setUser(null);
     router.push("/login");
   };

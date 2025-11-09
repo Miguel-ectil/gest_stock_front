@@ -5,25 +5,21 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { ProductService } from "@/services/productService";
 import { Product } from "@/interfaces/produtoInterface";
-
 import {
-  Box,
-  Button,
-  Card,
-  Chip,
+  Box, Button, Tooltip, IconButton, Card, Chip, Typography, TextField,
   Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Typography,
+  TableBody, TableCell, TableHead, TableRow,
   useTheme,
   Stack,
   Divider,
   useMediaQuery,
-  TextField
+
 } from "@mui/material";
-import { displayMessage } from "@/utils/displayMessage";
+import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
+import { } from "@mui/material";
+import { displayMessage } from "@/components/displayMessage";
+import { ModalAdicionarProduto } from "./productsModal";
 
 export default function ProdutosPage() {
   const theme = useTheme();
@@ -32,6 +28,9 @@ export default function ProdutosPage() {
   const [loading, setLoading] = useState(true);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // Estados do modal
+  const [openModal, setOpenModal] = useState(false);
+  const [produtoIdSelecionado, setProdutoIdSelecionado] = useState<number | null>(null);
 
   // Estados de paginação e filtro
   const [page, setPage] = useState(0);
@@ -42,7 +41,7 @@ export default function ProdutosPage() {
     setLoading(true)
     try {
       const resp = await productService.listProducts();
-      setProducts(resp.data);
+      setProducts(resp);
     } catch (error) {
       displayMessage("Erro", "Ocorreu algum erro ao tentar trazer os produtos.", "error", false, false, false, 3000);
     } finally {
@@ -54,22 +53,35 @@ export default function ProdutosPage() {
     getProdutos()
   }, [])
 
+  const handleOpenModal = (id?: number | null) => {
+    setProdutoIdSelecionado(id ?? null);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setProdutoIdSelecionado(null);
+  }
   return (
     <Box>
       <Card
         sx={{
-          border: '2px solid #e0e0e0',
+          border: "2px solid #e0e0e0",
           borderRadius: 2.5,
           mt: 1,
           backgroundColor: "#f4f6f8",
           boxShadow: 0,
-          p: 2,
+          p: { xs: 1.5, sm: 2, md: 3 }
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h4" color="text.secondary">Produtos</Typography>
           <Stack>
-            <Button variant="contained" color="success" component={Link} href="/product/22">
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => handleOpenModal(null)}
+            >
               Novo Produto
             </Button>
           </Stack>
@@ -92,18 +104,19 @@ export default function ProdutosPage() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align="center" sx={{ width: '16%' }}>Nome</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Preço</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Quantidade</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Status</TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}>Ações</TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Nome</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Preço</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Quantidade</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Status</strong></TableCell>
+
+                <TableCell align="center" sx={{ width: '16%' }}><strong>Ações</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product.id} hover>
                   <TableCell align="center">{product.name}</TableCell>
-                  <TableCell align="center">R$ {product.preco.toFixed(2)}</TableCell>
+                  <TableCell align="center">R$ {product.preco}</TableCell>
                   <TableCell align="center">{product.quantidade}</TableCell>
                   <TableCell align="center">
                     <Chip
@@ -113,36 +126,36 @@ export default function ProdutosPage() {
                     />
                   </TableCell>
                   <TableCell align="center">
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        variant="contained"
-                        color="warning"
+                    <Tooltip title="Editar" arrow>
+                      <IconButton
+                        color="default"
                         size="small"
-                        component={Link}
-                        href={`/produtos/${product.id}/editar`}
+                        onClick={() => handleOpenModal(product.id)}
                       >
-                        Editar
-                      </Button>
-                      <Button
-                        variant="contained"
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Detalhes" arrow>
+                      <IconButton
                         color="info"
-                        size="small"
                         component={Link}
                         href={`/produtos/${product.id}`}
+                        size="small"
                       >
-                        Detalhes
+                        <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                    {/* {product.status === true && (
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        onClick={() => handleInactivate(product.id)}
+                      >
+                        Inativar
                       </Button>
-                      {product.status === "Ativo" && (
-                        <Button
-                          variant="contained"
-                          color="error"
-                          size="small"
-                        // onClick={() => handleInactivate(product.id)}
-                        >
-                          Inativar
-                        </Button>
-                      )}
-                    </Stack>
+                    )} */}
                   </TableCell>
                 </TableRow>
               ))}
@@ -150,6 +163,14 @@ export default function ProdutosPage() {
           </Table>
         </Box>
       </Card>
+      <ModalAdicionarProduto
+        open={openModal}
+        onClose={handleCloseModal}
+        produtoId={produtoIdSelecionado}
+        onSuccess={() => {
+          getProdutos();
+        }}
+      />
     </Box>
   );
 }

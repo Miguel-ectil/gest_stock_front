@@ -1,36 +1,42 @@
+// src/services/productService.ts
 import { AxiosResponse } from "axios";
 import { httpClient } from "../config/axios";
+import { Product, ProductInput, ApiResponse } from "@/interfaces/produtoInterface";
 
 const Url = "/api";
 
 export const ProductService = () => {
-  const listProducts = async (): Promise<AxiosResponse<any>> => {
-    const url = `${Url}/products`
-    const resposta: AxiosResponse<any> = await httpClient.get(url);
-    return resposta;
-
-  };
-  
-  const getProduct = async (id: number): Promise<AxiosResponse<any>> => {
-    return await httpClient.get(`${Url}/${id}`);
+  const listProducts = async (): Promise<Product[]> => {
+    const url = `${Url}/products`;
+    const resp = await httpClient.get<Product[]>(url);
+    return resp.data;
   };
 
-    const createProduct = async (data: any): Promise<AxiosResponse<any>> => {
-    return await httpClient.post(Url, data);
+  const getProduct = async (id: number): Promise<Product> => {
+    const url = `${Url}/products/${id}`;
+    const resposta: AxiosResponse<Product> = await httpClient.get(url);
+    return resposta.data;
   };
 
-    const updateProduct = async (id: number, data: any): Promise<AxiosResponse<any>> => {
-    return await httpClient.put(`${Url}/${id}`, data);
+  const createProduct = async (data: ProductInput): Promise<AxiosResponse<Product>> => {
+    const url = `${Url}/products`;
+    return await httpClient.post<Product>(url, data);
   };
 
-    const inactivateProduct = async (id: number): Promise<AxiosResponse<any>> => {
-    return await httpClient.patch(`${Url}/${id}/inactivate`);
+  const updateProduct = async (id: number, data: ProductInput): Promise<AxiosResponse<Product>> => {
+    const url = `${Url}/products/${id}`;
+    return await httpClient.put<Product>(url, data);
   };
+
+  const inactivateProduct = async (id: number): Promise<AxiosResponse<void>> => {
+    return await httpClient.patch<void>(`${Url}/products/${id}/inactivate`);
+  };
+
   return {
     listProducts,
     getProduct,
     createProduct,
     updateProduct,
-    inactivateProduct
+    inactivateProduct,
   };
 };
