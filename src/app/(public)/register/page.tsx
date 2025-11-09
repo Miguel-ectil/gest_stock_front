@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box, Button, Paper, Stack, TextField, Typography, Modal } from "@mui/material";
 import Link from "next/link";
@@ -21,7 +21,6 @@ export default function CadastroPage() {
 
   // controle do modal
   const [openModal, setOpenModal] = useState(false);
-  const [codigo, setCodigo] = useState("");
   const [userTempId, setUserTempId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
@@ -45,7 +44,7 @@ export default function CadastroPage() {
       const resp = await authService.cadastrar(payload);
 
       displayMessage("Sucesso", "Usuário cadastrado com sucesso!", "success", false, false, false, 3000);
-      router.push("/login"); 
+      setOpenModal(true);
     } catch (err: any) {
       console.error("Erro no cadastro:", err);
       displayMessage("Erro", "Falha ao cadastrar o usuário.", "error", false, false, false, 3000);
@@ -59,11 +58,32 @@ export default function CadastroPage() {
       // const resp = await authService.verificarCodigo({ userId: userTempId, codigo });
       displayMessage("Sucesso", "Login confirmado!", "success", false, false, false, 3000);
       setOpenModal(false);
-      router.push("/dashboard");
+      router.push("/login");
     } catch (err) {
       displayMessage("Erro", "Código inválido ou expirado.", "error", false, false, false, 3000);
     }
   }
+
+  const [codigo, setCodigo] = useState<string[]>(["", "", "", ""]);
+  const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
+
+  const handleChangeCode = (index: number, value: string) => {
+    if (/^\d?$/.test(value)) {
+      const newCodigo = [...codigo];
+      newCodigo[index] = value;
+      setCodigo(newCodigo);
+
+      if (value && index < 3) {
+        inputsRef.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<any>) => {
+    if (e.key === "Backspace" && !codigo[index] && index > 0) {
+      inputsRef.current[index - 1]?.focus();
+    }
+  };
 
   return (
     <Box
@@ -175,7 +195,7 @@ export default function CadastroPage() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            bgcolor: "background.paper",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
             p: 4,
             borderRadius: 2,
             width: 400,
@@ -186,13 +206,26 @@ export default function CadastroPage() {
             Confirme seu código
           </Typography>
 
-          <TextField
-            label="Código recebido no WhatsApp"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-            fullWidth
-            sx={{ mb: 2 }}
-          />
+          <Box display="flex" justifyContent="center" gap={2} mb={3}>
+            {codigo.map((value, index) => (
+              <TextField
+                key={index}
+                inputRef={(el) => (inputsRef.current[index] = el)}
+                value={value}
+                onChange={(e) => handleChangeCode(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                inputProps={{
+                  maxLength: 1,
+                  style: {
+                    textAlign: "center",
+                    fontSize: "1.5rem",
+                    width: "1rem",
+                    height: "1rem",
+                  },
+                }}
+              />
+            ))}
+          </Box>
 
           <Button variant="contained" color="success" fullWidth onClick={confirmUser}>
             Confirmar
