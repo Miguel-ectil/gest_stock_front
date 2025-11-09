@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth";
-import { AxiosResponse } from "axios";
+import { AxiosResponse, AxiosError } from "axios";
 import { displayMessage } from "@/components/displayMessage";
 import { LoginRequest, LoginResponse } from "@/interfaces/interfaceAuth";
 
@@ -58,9 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       displayMessage("Sucesso", "Login efetuado com sucesso.", "success", false, false, false, 3000);
       router.push("/dashboard");
     } catch (err: unknown) {
-      const errorMsg =
-        (err as any)?.response?.data?.erro ||
-        "Falha no login. Verifique suas credenciais.";
+      let errorMsg = "Falha no login. Verifique suas credenciais.";
+
+      if (err instanceof AxiosError) {
+        errorMsg = err.response?.data?.erro ?? errorMsg;
+      }
 
       displayMessage("Erro", errorMsg, "error", false, false, false, 3000);
     } finally {

@@ -5,12 +5,13 @@ import { Box, Button, Paper, Stack, TextField, Typography, Modal } from "@mui/ma
 import Link from "next/link";
 import { AuthService } from "@/services/auth";
 import { displayMessage } from "@/components/displayMessage";
-
+import { AxiosError } from "axios";
 
 export default function CadastroPage() {
   const router = useRouter();
   const authService = AuthService();
 
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
     cnpj: "",
@@ -21,14 +22,6 @@ export default function CadastroPage() {
 
   // controle do modal
   const [openModal, setOpenModal] = useState(false);
-  const [userTempId, setUserTempId] = useState<string | null>(null);
-
-  const [loading, setLoading] = useState(false);
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }
 
   const postUser = async () => {
     setLoading(true);
@@ -41,28 +34,33 @@ export default function CadastroPage() {
         password: formData.senha,
         status: false,
       };
-      const resp = await authService.cadastrar(payload);
+
+      await authService.cadastrar(payload);
 
       displayMessage("Sucesso", "Usuário cadastrado com sucesso!", "success", false, false, false, 3000);
       setOpenModal(true);
-    } catch (err: any) {
-      console.error("Erro no cadastro:", err);
+
+    } catch (error) {
       displayMessage("Erro", "Falha ao cadastrar o usuário.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
+  };
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   const confirmUser = async () => {
     try {
-      // const resp = await authService.verificarCodigo({ userId: userTempId, codigo });
       displayMessage("Sucesso", "Login confirmado!", "success", false, false, false, 3000);
       setOpenModal(false);
       router.push("/login");
-    } catch (err) {
+    } catch (__err) {
       displayMessage("Erro", "Código inválido ou expirado.", "error", false, false, false, 3000);
     }
-  }
+  };
 
   const [codigo, setCodigo] = useState<string[]>(["", "", "", ""]);
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
@@ -79,11 +77,18 @@ export default function CadastroPage() {
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<any>) => {
-    if (e.key === "Backspace" && !codigo[index] && index > 0) {
-      inputsRef.current[index - 1]?.focus();
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLElement> 
+  ) => {
+    if (e.key === "Backspace") {
+      const target = e.target as HTMLInputElement;
+      if (!target.value && index > 0) {
+        inputsRef.current[index - 1]?.focus();
+      }
     }
   };
+
 
   return (
     <Box
@@ -104,7 +109,6 @@ export default function CadastroPage() {
           maxWidth: 600,
           borderRadius: 2,
           backgroundColor: "rgba(255, 255, 255, 0.9)",
-
         }}
       >
         <Typography variant="h5" fontWeight="bold" mb={2} textAlign="center">
@@ -177,17 +181,14 @@ export default function CadastroPage() {
           >
             Já possui uma conta?{" "}
             <Link href="/login" style={{ textDecoration: "none" }}>
-              <Typography
-                component="span"
-                color="primary"
-                sx={{ cursor: "pointer", fontWeight: 500 }}
-              >
+              <Typography component="span" color="primary" sx={{ cursor: "pointer", fontWeight: 500 }}>
                 Login
               </Typography>
             </Link>
           </Typography>
         </Stack>
       </Paper>
+
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <Box
           sx={{

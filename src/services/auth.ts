@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { httpClient } from "../config/axios";
-import { LoginRequest, LoginResponse } from "../interfaces/interfaceAuth";
+import { LoginRequest, LoginResponse, CadastroResponse, CadastroRequest } from "../interfaces/interfaceAuth";
 
 const Url = "/user";
 
@@ -11,9 +11,9 @@ export const AuthService = () => {
     return resposta;
   };
   
-  const cadastrar = async (data: any): Promise<AxiosResponse<any>> => {
+  const cadastrar = async (data: CadastroRequest): Promise<AxiosResponse<CadastroResponse>> => {
     const url = `${Url}`;
-    const resposta: AxiosResponse = await httpClient.post(url, data);
+    const resposta: AxiosResponse<CadastroResponse> = await httpClient.post(url, data);
     return resposta;
   };
 

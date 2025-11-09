@@ -13,3 +13,20 @@ export interface LoginResponse {
   token: string;
   usuario: Usuario;
 }
+
+
+export interface CadastroRequest {
+  name: string;
+  cnpj: string;
+  email: string;
+  celular: string;
+  password: string;
+  status: boolean;
+}
+
+export interface CadastroResponse {
+  id: string;
+  name: string;
+  email: string;
+  status: boolean;
+}
