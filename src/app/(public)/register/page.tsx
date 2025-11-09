@@ -1,21 +1,15 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Paper,
-  Stack,
-  Link,
-} from "@mui/material";
+import { Box, Button, Paper, Stack, TextField, Typography, Modal } from "@mui/material";
+import Link from "next/link";
 import { AuthService } from "@/services/auth";
+import { displayMessage } from "@/components/displayMessage";
+
 
 export default function CadastroPage() {
   const router = useRouter();
-  const productService = AuthService();
-  
+  const authService = AuthService();
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -23,8 +17,12 @@ export default function CadastroPage() {
     email: "",
     celular: "",
     senha: "",
-    status: "Inativo",
   });
+
+  // controle do modal
+  const [openModal, setOpenModal] = useState(false);
+  const [codigo, setCodigo] = useState("");
+  const [userTempId, setUserTempId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
 
@@ -33,16 +31,37 @@ export default function CadastroPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  async function handleCadastro() {
+  const postUser = async () => {
     setLoading(true);
     try {
-      console.log("Dados enviados:", formData);
-      // await AuthService.register(formData);
-      router.push("/"); // redireciona após cadastro
-    } catch (err) {
+      const payload = {
+        name: formData.nome,
+        cnpj: formData.cnpj,
+        email: formData.email,
+        celular: formData.celular,
+        password: formData.senha,
+        status: false,
+      };
+      const resp = await authService.cadastrar(payload);
+
+      displayMessage("Sucesso", "Usuário cadastrado com sucesso!", "success", false, false, false, 3000);
+      router.push("/login"); 
+    } catch (err: any) {
       console.error("Erro no cadastro:", err);
+      displayMessage("Erro", "Falha ao cadastrar o usuário.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
+    }
+  }
+
+  const confirmUser = async () => {
+    try {
+      // const resp = await authService.verificarCodigo({ userId: userTempId, codigo });
+      displayMessage("Sucesso", "Login confirmado!", "success", false, false, false, 3000);
+      setOpenModal(false);
+      router.push("/dashboard");
+    } catch (err) {
+      displayMessage("Erro", "Código inválido ou expirado.", "error", false, false, false, 3000);
     }
   }
 
@@ -64,9 +83,10 @@ export default function CadastroPage() {
           width: "100%",
           maxWidth: 600,
           borderRadius: 2,
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
+
         }}
       >
-
         <Typography variant="h5" fontWeight="bold" mb={2} textAlign="center">
           Cadastro Usuário
         </Typography>
@@ -121,7 +141,7 @@ export default function CadastroPage() {
           <Button
             variant="contained"
             color="success"
-            onClick={handleCadastro}
+            onClick={postUser}
             disabled={loading}
             fullWidth
             sx={{ mt: 1 }}
@@ -129,7 +149,12 @@ export default function CadastroPage() {
             {loading ? "Cadastrando..." : "Cadastrar"}
           </Button>
 
-          <Typography variant="body2" color="text.secondary" mt={3} textAlign="center">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            mt={3}
+            textAlign="center"
+          >
             Já possui uma conta?{" "}
             <Link href="/login" style={{ textDecoration: "none" }}>
               <Typography
@@ -143,6 +168,37 @@ export default function CadastroPage() {
           </Typography>
         </Stack>
       </Paper>
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            bgcolor: "background.paper",
+            p: 4,
+            borderRadius: 2,
+            width: 400,
+            boxShadow: 24,
+          }}
+        >
+          <Typography variant="h6" textAlign="center" mb={2}>
+            Confirme seu código
+          </Typography>
+
+          <TextField
+            label="Código recebido no WhatsApp"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <Button variant="contained" color="success" fullWidth onClick={confirmUser}>
+            Confirmar
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 }
