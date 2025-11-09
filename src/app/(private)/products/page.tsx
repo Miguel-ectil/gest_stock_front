@@ -41,7 +41,7 @@ export default function ProdutosPage() {
     setLoading(true)
     try {
       const resp = await productService.listProducts();
-      setProducts(resp.data);
+      setProducts(resp);
     } catch (error) {
       displayMessage("Erro", "Ocorreu algum erro ao tentar trazer os produtos.", "error", false, false, false, 3000);
     } finally {
@@ -116,7 +116,7 @@ export default function ProdutosPage() {
               {products.map((product) => (
                 <TableRow key={product.id} hover>
                   <TableCell align="center">{product.name}</TableCell>
-                  <TableCell align="center">R$ {product.preco.toFixed(2)}</TableCell>
+                  <TableCell align="center">R$ {product.preco}</TableCell>
                   <TableCell align="center">{product.quantidade}</TableCell>
                   <TableCell align="center">
                     <Chip
@@ -146,16 +146,16 @@ export default function ProdutosPage() {
                         <InfoIcon />
                       </IconButton>
                     </Tooltip>
-                    {product.status === "Ativo" && (
+                    {/* {product.status === true && (
                       <Button
                         variant="contained"
                         color="error"
                         size="small"
-                      // onClick={() => handleInactivate(product.id)}
+                        onClick={() => handleInactivate(product.id)}
                       >
                         Inativar
                       </Button>
-                    )}
+                    )} */}
                   </TableCell>
                 </TableRow>
               ))}

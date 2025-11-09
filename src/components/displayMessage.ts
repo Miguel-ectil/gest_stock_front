@@ -1,16 +1,16 @@
-import Swal from 'sweetalert2';
+import Swal, { SweetAlertOptions, SweetAlertIcon } from 'sweetalert2';
 
 export const displayMessage = (
-    title: any,
-    text: any,
-    icon: 'success' | 'error' | 'warning' | 'info' | 'question',
+    title: string | undefined,
+    text: string | undefined,
+    icon: SweetAlertIcon,
     buttons?: boolean,
     buttonConfirm?: boolean,
-    buttonText?: any,
-    time?: any,
-    options: any = {}
+    buttonText?: string | false,
+    time?: number,
+    options: SweetAlertOptions = {}
 ) => {
-    const iconColors = {
+    const iconColors: Record<SweetAlertIcon, string> = {
         success: '#4caf50',
         error: '#f44336',
         warning: '#ff9800',
@@ -18,7 +18,7 @@ export const displayMessage = (
         question: '#7ca5af'
     };
 
-    const objSwal: any = {
+    const objSwal: SweetAlertOptions = {
         title: title || 'Sucesso!',
         html: text,
         showCancelButton: buttons,

@@ -1,8 +1,13 @@
 export interface Product {
     id: number;
     name: string;
-    preco: number;
+    preco: string;
     quantidade: number;
-    status: "Ativo" | "Inativo";
+    status: boolean
     img?: string;
+}
+
+export interface ProductResponse {
+    data: Product[];
+    total: number;
 }

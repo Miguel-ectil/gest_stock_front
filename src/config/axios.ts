@@ -8,10 +8,11 @@ const mainBaseURL = process.env.NEXT_PUBLIC_API_URL!;
 const createInstance = (baseURL: string): AxiosInstance => {
     const instance = axios.create({ baseURL });
 
-    instance.interceptors.request.use((config: any) => {
+    instance.interceptors.request.use((config) => {
         const authToken = Cookies.get('token');
         if (authToken) {
-            config.headers.Authorization = `Bearer ${authToken}`.replace(/\"/g, "");
+            config.headers = config.headers || {};
+            (config.headers as Record<string, string>).Authorization = `Bearer ${authToken}`.replace(/\"/g, "");
         }
         return config;
     });

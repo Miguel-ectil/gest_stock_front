@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AuthService } from "@/services/auth";
 import { AxiosResponse } from "axios";
 import { displayMessage } from "@/components/displayMessage";
+import { LoginRequest, LoginResponse } from "@/interfaces/interfaceAuth";
 
 interface User {
   id: number;
@@ -16,7 +17,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (data: any) => Promise<void>;
+  login: (data: LoginRequest) => Promise<void>; // <--- Aqui substituímos o 'any'
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -42,10 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (data: any) => {
+  const login = async (data: LoginRequest) => {
     setLoading(true);
     try {
-      const response: AxiosResponse<{ token: string; usuario: { id: number; nome: string } }> = await service.login(data);
+      const response: AxiosResponse<LoginResponse> = await service.login(data);
 
       const { token, usuario } = response.data;
 
@@ -56,9 +57,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       displayMessage("Sucesso", "Login efetuado com sucesso.", "success", false, false, false, 3000);
       router.push("/dashboard");
-    } catch (err) {
+    } catch (err: unknown) {
       displayMessage("Erro", "Falha no login. Verifique suas credenciais.", "error", false, false, false, 3000);
-
     } finally {
       setLoading(false);
     }
