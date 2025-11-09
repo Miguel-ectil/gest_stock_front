@@ -23,8 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     const resp =await login({ email, password }); 
   };
-  // if (loading || user) return <p className="p-20"></p>;
-
+  
   return (
     <Box
       display="flex"

@@ -20,6 +20,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { } from "@mui/material";
 import { displayMessage } from "@/components/displayMessage";
 import { ModalAdicionarProduto } from "./productsModal";
+import { AxiosError } from "axios";
 
 export default function ProdutosPage() {
   const theme = useTheme();
@@ -42,8 +43,14 @@ export default function ProdutosPage() {
     try {
       const resp = await productService.listProducts();
       setProducts(resp);
-    } catch (error) {
-      displayMessage("Erro", "Ocorreu algum erro ao tentar trazer os produtos.", "error", false, false, false, 3000);
+    } catch (err: unknown) {
+          let errorMsg = "Falha no login. Verifique suas credenciais.";
+    
+          if (err instanceof AxiosError) {
+            errorMsg = err.response?.data?.erro ?? errorMsg;
+          }
+    
+          displayMessage("Erro", errorMsg, "info", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
@@ -66,10 +73,10 @@ export default function ProdutosPage() {
     <Box>
       <Card
         sx={{
-          border: "2px solid #e0e0e0",
+          border: "1px solid #bbb",
           borderRadius: 2.5,
           mt: 1,
-          backgroundColor: "#f4f6f8",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
           boxShadow: 0,
           p: { xs: 1.5, sm: 2, md: 3 }
         }}
