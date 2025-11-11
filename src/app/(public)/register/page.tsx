@@ -40,7 +40,7 @@ export default function CadastroPage() {
       displayMessage("Sucesso", "Usuário cadastrado com sucesso!", "success", false, false, false, 3000);
       setOpenModal(true);
 
-    } catch (error) {
+    } catch {
       displayMessage("Erro", "Falha ao cadastrar o usuário.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
@@ -57,7 +57,7 @@ export default function CadastroPage() {
       displayMessage("Sucesso", "Login confirmado!", "success", false, false, false, 3000);
       setOpenModal(false);
       router.push("/login");
-    } catch (__err) {
+    } catch (_err) {
       displayMessage("Erro", "Código inválido ou expirado.", "error", false, false, false, 3000);
     }
   };
@@ -88,7 +88,6 @@ export default function CadastroPage() {
       }
     }
   };
-
 
   return (
     <Box
