@@ -26,25 +26,30 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const [currentProdutoId, setCurrentProdutoId] = useState(produtoId);
 
   const [name, setName] = useState("");
-  const [preco, setPreco] = useState("");
+  const [preco, setPreco] = useState<number | "">(""); 
   const [quantidade, setQuantidade] = useState<number | "">("");
   const [imgFile, setImgFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string | null>(null);
+  const [descricao, setDescricao] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [sku, setSku] = useState("");
+  const [desconto, setDesconto] = useState<number | "">("");
 
   // Estados do switch
   const [checked, setChecked] = React.useState(true);
 
-
-  // Buscar produto caso seja edição
   const buscarProduto = async (id: number) => {
     setLoading(true);
     try {
       const resp = await productService.getProduct(id);
-      console.log(resp)
       setName(resp.name);
       setPreco(resp.preco);
       setQuantidade(resp.quantidade);
-      setChecked(resp.status)
+      setChecked(resp.status);
+      setDescricao(resp.descricao || "");
+      setCategoria(resp.categoria || "");
+      setSku(resp.sku || "");
+      setDesconto(resp.desconto || "");
     } catch (error) {
       displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
     } finally {
@@ -64,6 +69,10 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
         setQuantidade("");
         setImgFile(null);
         setImgPreview(null);
+        setDescricao("");
+        setCategoria("");
+        setSku("");
+        setDesconto("");
       }
     }
   }, [open, produtoId]);
@@ -71,8 +80,18 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const data: ProductInput = { id_vendedor: user?.id, name, preco, quantidade, status: checked, imagem: null };
-
+      const data: ProductInput = {
+        id_vendedor: user?.id,
+        name,
+        preco: Number(preco),
+        quantidade,
+        status: checked,
+        imagem: null,
+        descricao,
+        categoria,
+        sku,
+        desconto: desconto === "" ? 0 : Number(desconto)
+      };
       if (currentProdutoId) {
         const resp = await productService.updateProduct(currentProdutoId, data);
         displayMessage("Sucesso", "Produto atualizado com sucesso!", "success", false, false, false, 3000);
@@ -116,13 +135,12 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
     >
       <DialogTitle sx={{ pt: 2 }}>
         <Typography align="center" variant="h6" component="div">
-          <strong>
-            {currentProdutoId ? "Editar Produto" : "Cadastrar Novo Produto"}
-          </strong>
+          <strong>{currentProdutoId ? "Editar Produto" : "Cadastrar Novo Produto"}</strong>
         </Typography>
       </DialogTitle>
 
       <Box display="flex" flexDirection="column" gap={2} mt={2}>
+        {/* Imagem */}
         <Box display="flex" flexDirection="column" gap={1}>
           <Button variant="outlined" component="label">
             {imgFile ? "Alterar Imagem" : "Adicionar Imagem"}
@@ -136,54 +154,45 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
           )}
         </Box>
 
-        <TextField
-          label="Nome do Produto"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          fullWidth
-          size="small"
-        />
+        {/* Nome */}
+        <TextField label="Nome do Produto" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" />
 
+        {/* Preço e Quantidade */}
         <Box display="flex" gap={2}>
           <TextField
             label="Preço"
             type="number"
             value={preco}
-            onChange={(e) => setPreco(e.target.value)}
+            onChange={(e) => setPreco(Number(e.target.value))}
             fullWidth
-            variant="outlined"
             size="small"
           />
-          <TextField
-            label="Quantidade"
-            type="number"
-            value={quantidade}
-            onChange={(e) => setQuantidade(Number(e.target.value))}
-            fullWidth
-            variant="outlined"
-            size="small"
-          />
+          <TextField label="Quantidade" type="number" value={quantidade} onChange={(e) => setQuantidade(Number(e.target.value))} fullWidth size="small" />
+        </Box>
+
+        {/* Descrição */}
+        <TextField label="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} fullWidth size="small" multiline rows={2} />
+
+        {/* Categoria */}
+        <TextField label="Categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} fullWidth size="small" />
+
+        {/* SKU e Desconto */}
+        <Box display="flex" gap={2}>
+          <TextField label="código produto" value={sku} onChange={(e) => setSku(e.target.value)} fullWidth size="small" />
+          <TextField label="Desconto (%)" type="number" value={desconto} onChange={(e) => setDesconto(Number(e.target.value))} fullWidth size="small" />
         </Box>
 
         <FormControlLabel
-          control={
-            <Switch
-              checked={checked}
-              onChange={handleChange}
-              color="success"
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
-          }
+          control={<Switch checked={checked} onChange={handleChange} color="success" />}
           label={checked ? "Ativo" : "Inativo"}
         />
 
+        {/* Botões */}
         <Box display="flex" justifyContent="flex-end">
           <Button onClick={onClose} color="error" variant="outlined" sx={{ mr: 2 }} size="small">
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} size="small"
-            color="success" variant="contained" disabled={loading}
-          >
+          <Button onClick={handleSubmit} size="small" color="success" variant="contained" disabled={loading}>
             {loading ? "Salvando..." : "Salvar"}
           </Button>
         </Box>
