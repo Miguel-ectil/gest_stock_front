@@ -1,4 +1,3 @@
-// src/services/productService.ts
 import { AxiosResponse } from "axios";
 import { httpClient } from "../config/axios";
 import { Product, ProductInput, ApiResponse } from "@/interfaces/produtoInterface";

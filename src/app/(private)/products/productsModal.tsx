@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogTitle, Typography, TextField, Button, MenuItem, Box, Switch, FormControlLabel } from "@mui/material";
+import { Dialog, DialogTitle, Typography, TextField, Button, Box, Switch, FormControlLabel } from "@mui/material";
 import { displayMessage } from "@/components/displayMessage";
 import { ProductService } from "@/services/productService";
 import { ProductInput } from "@/interfaces/produtoInterface"
@@ -50,7 +50,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
       setCategoria(resp.categoria || "");
       setSku(resp.sku || "");
       setDesconto(resp.desconto || "");
-    } catch (error) {
+    } catch {
       displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
     } finally {
       setLoading(false);
@@ -93,16 +93,16 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
         desconto: desconto === "" ? 0 : Number(desconto)
       };
       if (currentProdutoId) {
-        const resp = await productService.updateProduct(currentProdutoId, data);
+        await productService.updateProduct(currentProdutoId, data);
         displayMessage("Sucesso", "Produto atualizado com sucesso!", "success", false, false, false, 3000);
       } else {
-        const resp = await productService.createProduct(data);
+        await productService.createProduct(data);
         displayMessage("Sucesso", "Produto cadastrado com sucesso!", "success", false, false, false, 3000);
       }
 
       onSuccess?.();
       onClose();
-    } catch (error) {
+    } catch (_error) {
       displayMessage("Erro", "Falha ao salvar o produto.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);

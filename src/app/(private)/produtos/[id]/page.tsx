@@ -6,11 +6,13 @@ import { ProductService } from "@/services/productService";
 import { Box, Button, Typography, CircularProgress, TextField } from "@mui/material";
 import Image from "next/image";
 import { ProdutoType }  from "@/interfaces/produtoInterface"
+import { VendasService } from "@/services/vendasService";
 
 export default function Produto() {
   const params = useParams();
   const id = params?.id as unknown as number;
   const productService = ProductService();
+  const vendasService = VendasService();
 
   const [loading, setLoading] = useState(false);
   const [produto, setProduto] = useState<ProdutoType | null>(null);
@@ -36,18 +38,44 @@ export default function Produto() {
       };
 
       setProduto(produtoFormatado);
-    } catch (error) {
+    } catch {
       displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVenda = (qtd: number) => {
-    console.log(`Vendendo ${qtd} unidades do produto ${produto?.name}`);
-    displayMessage("Sucesso", `Vendendo ${qtd} unidades do produto.`, "success", false, false);
-    // Integração futura com API de vendas
+  const handleVenda = async (qtd: number) => {
+    if (!produto) return;
+
+    try {
+      setLoading(true);
+      const data = {
+        id_produto: Number(id),
+        quantidade: qtd,
+      };
+      const resp = await vendasService.createVenda(data);
+
+      displayMessage("Sucesso", resp.mensagem || "Venda registrada com sucesso!", "success", false, false);
+
+      setProduto({ ...produto, quantidade: produto.quantidade - qtd });
+
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { erro?: string } } };
+      console.error(err);
+
+      displayMessage(
+        "Erro",
+        err.response?.data?.erro || "Falha ao registrar venda.",
+        "error",
+        false,
+        false
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   useEffect(() => {
     buscarProduto(id);
@@ -151,7 +179,8 @@ export default function Produto() {
             sx={{borderRadius: 2}}
             onClick={() => handleVenda(quantidadeVenda)}
           >
-            Vender {quantidadeVenda} {quantidadeVenda === 1 ? "unidade" : "unidades"}
+            Vender Produto
+            {/* {quantidadeVenda} {quantidadeVenda === 1 ? "unidade" : "unidades"} */}
           </Button>
         </Box>
       </Box>
