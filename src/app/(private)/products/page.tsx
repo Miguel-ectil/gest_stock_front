@@ -71,12 +71,12 @@ export default function ProdutosPage() {
   }
   return (
     <Box>
-      <Card
+      <Box
         sx={{
           border: "1px solid #bbb",
           borderRadius: 2.5,
           mt: 1,
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          // backgroundColor: "rgba(255, 255, 255, 0.9)",
           boxShadow: 0,
           p: { xs: 1.5, sm: 2, md: 3 }
         }}
@@ -169,7 +169,7 @@ export default function ProdutosPage() {
             </TableBody>
           </Table>
         </Box>
-      </Card>
+      </Box>
       <ModalAdicionarProduto
         open={openModal}
         onClose={handleCloseModal}
