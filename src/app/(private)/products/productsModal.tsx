@@ -51,7 +51,7 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
       setSku(resp.sku || "");
       setDesconto(resp.desconto || "");
     } catch {
-      displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
+      displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }

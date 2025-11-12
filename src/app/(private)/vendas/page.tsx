@@ -54,12 +54,34 @@ export default function ItensVendas() {
                     value={filter}
                     onChange={e => setFilter(e.target.value)}
                     size="small"
+                    sx={{
+                        borderRadius: 6,
+                        "& .MuiOutlinedInput-root": {
+                            borderRadius: 6,
+                            backgroundColor: "transparent",
+                            "& fieldset": {
+                                borderColor: "#bbb",
+                            },
+                            "&:hover fieldset": {
+                                borderColor: "#888",
+                            },
+                            "&.Mui-focused fieldset": {
+                                borderColor: "#4ade80",
+                            },
+                        },
+                        "& .MuiInputLabel-root": {
+                            color: "#555",
+                        },
+                        "& .MuiInputBase-input": {
+                            color: "#8a8080ff",
+                        },
+                    }}
                 />
             </Box>
 
             <Grid container spacing={3}>
                 {filteredVendas.map((venda) => (
-                    <Card
+                    <Box
                         key={venda.id_venda}
                         sx={{
                             display: 'flex',
@@ -73,6 +95,7 @@ export default function ItensVendas() {
                                 transform: 'translateY(-5px)',
                                 boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
                             },
+                            border: "1px solid #bbb"
                         }}
                     >
                         <CardMedia
@@ -92,22 +115,22 @@ export default function ItensVendas() {
                             <Typography variant="h6" sx={{ fontWeight: 600 }}>
                                 {venda.nome_produto}
                             </Typography>
-                            <Typography variant="body2" color="text.secondary">
+                            <Typography variant="body2" >
                                 Vendido por: <strong>{venda.nome_vendedor}</strong>
                             </Typography>
-                            <Typography variant="body2" color="text.primary" sx={{ fontWeight: 500 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 500 }}>
                                 R$ {venda.preco_unitario.toFixed(2)}
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption">
                                     Quantidade: {venda.quantidade}
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
+                                <Typography variant="caption">
                                     {new Date(venda.data_venda).toLocaleDateString()}
                                 </Typography>
                             </Box>
                         </Box>
-                    </Card>
+                    </Box>
 
                 ))}
             </Grid>

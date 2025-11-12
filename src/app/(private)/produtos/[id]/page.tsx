@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { displayMessage } from "@/components/displayMessage";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ProductService } from "@/services/productService";
 import { Box, Button, Typography, CircularProgress, TextField } from "@mui/material";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { VendasService } from "@/services/vendasService";
 
 export default function Produto() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id as unknown as number;
   const productService = ProductService();
   const vendasService = VendasService();
@@ -39,7 +40,7 @@ export default function Produto() {
 
       setProduto(produtoFormatado);
     } catch {
-      displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
+      displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
@@ -56,7 +57,11 @@ export default function Produto() {
       };
       const resp = await vendasService.createVenda(data);
 
-      displayMessage("Sucesso", resp.mensagem || "Venda registrada com sucesso!", "success", false, false);
+      displayMessage("Sucesso", resp.mensagem || "Venda registrada com sucesso!", "success", false, false, false, 3000);
+
+      setTimeout(() => {
+        router.push("/vendas");
+      }, 3500);
 
       setProduto({ ...produto, quantidade: produto.quantidade - qtd });
 
@@ -97,7 +102,7 @@ export default function Produto() {
 
   return (
     <Box className="lg:px-10 xl:px-20 mt-20 relative">
-      <Box className="flex flex-col lg:flex-row bg-white shadow-lg overflow-hidden">
+      <Box className="flex flex-col lg:flex-row shadow-lg overflow-hidden border border-[#bbb] rounded-lg">
         <Box className="lg:w-1/2 flex justify-center items-center p-6 bg-gray-100">
           <Image
             src={produto.imagem || "/imgs/tenis-air-jordan-4.jpg"}
@@ -111,16 +116,16 @@ export default function Produto() {
 
         <Box className="lg:w-1/2 p-10 flex flex-col justify-between min-h-[500px]">
           <Box className="space-y-4">
-            <Typography variant="h3" fontWeight="bold" className="text-gray-900">
+            <Typography variant="h3" fontWeight="bold" className="text-blue-800">
               {produto.name}
             </Typography>
             <Box display="flex" alignItems="center" gap={2}>
               {produto.desconto > 0 ? (
                 <>
-                  <Typography variant="body1" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                  <Typography variant="body1"  sx={{ textDecoration: 'line-through' }}>
                     R$ {produto.preco.toFixed(2)}
                   </Typography>
-                  <Typography variant="h5" className="text-blue-600 font-extrabold">
+                  <Typography variant="h5" className="text-green-600 font-extrabold">
                     R$ {(produto.preco * (1 - produto.desconto / 100)).toFixed(2)}
                   </Typography>
                 </>
@@ -159,15 +164,39 @@ export default function Produto() {
               type="number"
               variant="outlined"
               size="small"
-              InputProps={{ inputProps: { min: 1, max: produto.quantidade } }}
+              InputProps={{ inputProps: { min: 0, max: produto.quantidade } }}
               value={quantidadeVenda}
               onChange={(e) =>
-                setQuantidadeVenda(Math.min(Math.max(Number(e.target.value), 1), produto.quantidade))
+                setQuantidadeVenda(
+                  Math.min(Math.max(Number(e.target.value), 1), produto.quantidade)
+                )
               }
               className="mt-4"
+              sx={{
+                borderRadius: 6,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 6,
+                  backgroundColor: "transparent", 
+                  "& fieldset": {
+                    borderColor: "#bbb",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "#888",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "#4ade80", 
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  color: "#555", 
+                },
+                "& .MuiInputBase-input": {
+                  color: "#8a8080ff", 
+                },
+              }}
             />
 
-            <Typography variant="body1" className="text-gray-600" sx={{mt: 1}}>
+            <Typography variant="body1" sx={{mt: 1}}>
               {produto.descricao}
             </Typography>
           </Box>
