@@ -76,13 +76,16 @@ export default function ProdutosPage() {
           border: "1px solid #bbb",
           borderRadius: 2.5,
           mt: 1,
-          // backgroundColor: "rgba(255, 255, 255, 0.9)",
           boxShadow: 0,
-          p: { xs: 1.5, sm: 2, md: 3 }
+          p: { xs: 1.5, sm: 2, md: 3 },
+          backgroundColor: "rgba(128, 125, 125, 0.03)", 
+          backdropFilter: "blur(10px)", 
+          WebkitBackdropFilter: "blur(1px)",
         }}
       >
+
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-          <Typography variant="h4" color="text.secondary">Produtos</Typography>
+          <Typography variant="h4" sx={{ color: 'var(--foreground)' }}>Produtos</Typography>
           <Stack>
             <Button
               variant="contained"
@@ -104,27 +107,64 @@ export default function ProdutosPage() {
               setFilter(e.target.value);
               setPage(0);
             }}
-            sx={{ width: '300px' }}
+            sx={{
+              width: '300px',
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+                backgroundColor: "transparent",
+                "& fieldset": {
+                  borderColor: "#bbb",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#888",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#4ade80",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#555",
+              },
+              "& .MuiInputBase-input": {
+                color: "#8a8080ff",
+              },
+            }}
           />
         </Box>
         <Box>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell align="center" sx={{ width: '16%' }}><strong>Nome</strong></TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}><strong>Preço</strong></TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}><strong>Quantidade</strong></TableCell>
-                <TableCell align="center" sx={{ width: '16%' }}><strong>Status</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%', color: 'var(--foreground)' }} >
+                  <strong>Nome</strong>
+                </TableCell>
+                <TableCell align="center" sx={{ width: '16%', color: 'var(--foreground)' }}>
+                  <strong>Preço</strong>
+                </TableCell>
+                <TableCell align="center" sx={{ width: '16%', color: 'var(--foreground)' }}>
+                  <strong>Quantidade</strong>
+                </TableCell>
+                <TableCell align="center" sx={{ width: '16%', color: 'var(--foreground)' }}>
+                  <strong>Status</strong>
+                </TableCell>
 
-                <TableCell align="center" sx={{ width: '16%' }}><strong>Ações</strong></TableCell>
+                <TableCell align="center" sx={{ width: '16%', color: 'var(--foreground)' }}>
+                  <strong>Ações</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product.id} hover>
-                  <TableCell align="center">{product.name}</TableCell>
-                  <TableCell align="center">R$ {product.preco}</TableCell>
-                  <TableCell align="center">{product.quantidade}</TableCell>
+                  <TableCell align="center" sx={{ color: 'var(--foreground)' }}>
+                    {product.name}
+                  </TableCell>
+                  <TableCell align="center" sx={{ color: 'var(--foreground)' }}>R$
+                    {product.preco}
+                  </TableCell>
+                  <TableCell align="center" sx={{ color: 'var(--foreground)' }}>
+                    {product.quantidade}
+                  </TableCell>
                   <TableCell align="center">
                     <Chip
                       label={product.status ? "Ativo" : "Inativo"}
@@ -139,7 +179,7 @@ export default function ProdutosPage() {
                         size="small"
                         onClick={() => handleOpenModal(product.id)}
                       >
-                        <EditIcon />
+                        <EditIcon sx={{ color: 'var(--foreground)' }} />
                       </IconButton>
                     </Tooltip>
 
