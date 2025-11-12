@@ -20,7 +20,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
         { name: "Dashboard", icon: <Home size={20} />, path: "/dashboard" },
         { name: "Produtos", icon: <Package size={20} />, path: "/products" },
         { name: "Vendas", icon: <ShoppingCart size={20} />, path: "/vendas" },
-        { name: "Configurações", icon: <Settings size={20} />, path: "/config" },
+        // { name: "Configurações", icon: <Settings size={20} />, path: "/config" },
     ];
 
     return (
@@ -65,11 +65,11 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
             </nav>
 
             <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                {isOpen && (
+                {/* {isOpen && (
                     <p className="text-sm text-gray-500 mb-2 truncate">
                         {user?.nome ?? "Usuário"}
                     </p>
-                )}
+                )} */}
                 <button
                     onClick={() => {
                         logout();

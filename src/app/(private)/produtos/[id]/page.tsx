@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { displayMessage } from "@/components/displayMessage";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ProductService } from "@/services/productService";
 import { Box, Button, Typography, CircularProgress, TextField } from "@mui/material";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { VendasService } from "@/services/vendasService";
 
 export default function Produto() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id as unknown as number;
   const productService = ProductService();
   const vendasService = VendasService();
@@ -39,7 +40,7 @@ export default function Produto() {
 
       setProduto(produtoFormatado);
     } catch {
-      displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false);
+      displayMessage("Erro", "Falha ao tentar achar o produto.", "error", false, false, false, 3000);
     } finally {
       setLoading(false);
     }
@@ -56,7 +57,11 @@ export default function Produto() {
       };
       const resp = await vendasService.createVenda(data);
 
-      displayMessage("Sucesso", resp.mensagem || "Venda registrada com sucesso!", "success", false, false);
+      displayMessage("Sucesso", resp.mensagem || "Venda registrada com sucesso!", "success", false, false, false, 3000);
+
+      setTimeout(() => {
+        router.push("/vendas");
+      }, 3500);
 
       setProduto({ ...produto, quantidade: produto.quantidade - qtd });
 
