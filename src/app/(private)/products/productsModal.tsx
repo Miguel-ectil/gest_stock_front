@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogTitle, Typography, TextField, Button, Box, Switch, FormControlLabel } from "@mui/material";
+import { Dialog, DialogTitle, Typography, TextField, Button, Box, Switch, FormControlLabel, IconButton } from "@mui/material";
 import { displayMessage } from "@/components/displayMessage";
 import { ProductService } from "@/services/productService";
 import { ProductInput } from "@/interfaces/produtoInterface"
 import { useAuth } from "@/hooks/useAuth";
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import CloseIcon from '@mui/icons-material/Close';
+import InputAdornment from '@mui/material/InputAdornment';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface ModalAdicionarProdutoProps {
   open: boolean;
@@ -127,38 +131,114 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
 
   return (
     <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="sm"
-      PaperProps={{ sx: { borderRadius: "10px", padding: 2 } }}
-    >
-      <DialogTitle sx={{ pt: 2 }}>
-        <Typography align="center" variant="h6" component="div">
-          <strong>{currentProdutoId ? "Editar Produto" : "Cadastrar Novo Produto"}</strong>
+  open={open}
+  onClose={onClose}
+  fullWidth
+  maxWidth="sm"
+  PaperProps={{ 
+    sx: { 
+      borderRadius: "16px", 
+      boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+      overflow: "hidden"
+    } 
+  }}
+>
+  <Box
+    sx={{
+      background: "linear-gradient(135deg, #1c5b15 0%, #4ba298 100%)",
+      color: "white",
+      py: 2,
+      px: 2
+    }}
+  >
+    <DialogTitle sx={{ p: 0, textAlign: "center" }}>
+      <Typography variant="h5" component="div" fontWeight="bold">
+        {currentProdutoId ? "Editar Produto" : "Cadastrar Novo Produto"}
+      </Typography>
+      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+        {currentProdutoId ? "Atualize as informações do produto" : "Preencha os dados do novo produto"}
+      </Typography>
+    </DialogTitle>
+  </Box>
+
+  <Box sx={{ p: 3, maxHeight: "70vh", overflowY: "auto" }}>
+    {/* Seção de Imagem */}
+    <Box sx={{ mb: 3 }}>
+      <Typography variant="subtitle2" fontWeight="bold" color="text.secondary" sx={{ mb: 1 }}>
+        IMAGEM DO PRODUTO
+      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Button 
+          variant="outlined" 
+          component="label"
+          startIcon={<PhotoCameraIcon />}
+          sx={{
+            borderStyle: "dashed",
+            borderWidth: "2px",
+            py: 1.5,
+            flex: 1
+          }}
+        >
+          {imgFile ? "Alterar Imagem" : "Adicionar Imagem"}
+          <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+        </Button>
+        
+        {imgPreview && (
+          <Box sx={{ position: "relative" }}>
+            <img 
+              src={imgPreview} 
+              alt="Prévia do produto" 
+              style={{ 
+                width: 80, 
+                height: 80, 
+                borderRadius: 8,
+                objectFit: "cover",
+                border: "2px solid #e0e0e0"
+              }} 
+            />
+            <IconButton
+              size="small"
+              sx={{
+                position: "absolute",
+                top: -8,
+                right: -8,
+                backgroundColor: "error.main",
+                color: "white",
+                width: 24,
+                height: 24,
+                '&:hover': { backgroundColor: "error.dark" }
+              }}
+              onClick={() => {
+                setImgPreview(null);
+                setImgFile(null);
+              }}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+    </Box>
+
+    <Box display="flex" flexDirection="column" gap={3}>
+      {/* Nome do Produto */}
+      <Box>
+        <Typography variant="subtitle2" fontWeight="bold" color="text.secondary" sx={{ mb: 1 }}>
+          INFORMAÇÕES BÁSICAS
         </Typography>
-      </DialogTitle>
+        <TextField 
+          label="Nome do Produto" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          fullWidth 
+          size="small"
+          placeholder="Digite o nome do produto"
+        />
+      </Box>
 
-      <Box display="flex" flexDirection="column" gap={2} mt={2}>
-        {/* Imagem */}
-        <Box display="flex" flexDirection="column" gap={1}>
-          <Button variant="outlined" component="label">
-            {imgFile ? "Alterar Imagem" : "Adicionar Imagem"}
-            <input type="file" hidden accept="image/*" onChange={handleImageChange} />
-          </Button>
-          {imgPreview && (
-            <Box mt={1}>
-              <Typography variant="caption">Pré-visualização:</Typography>
-              <img src={imgPreview} alt="Prévia do produto" style={{ width: 150, marginTop: 5 }} />
-            </Box>
-          )}
-        </Box>
-
-        {/* Nome */}
-        <TextField label="Nome do Produto" value={name} onChange={(e) => setName(e.target.value)} fullWidth size="small" />
-
-        {/* Preço e Quantidade */}
-        <Box display="flex" gap={2}>
+      {/* Preço e Quantidade */}
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{ flex: 1 }}>
           <TextField
             label="Preço"
             type="number"
@@ -166,37 +246,149 @@ export const ModalAdicionarProduto: React.FC<ModalAdicionarProdutoProps> = ({
             onChange={(e) => setPreco(Number(e.target.value))}
             fullWidth
             size="small"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+            }}
           />
-          <TextField label="Quantidade" type="number" value={quantidade} onChange={(e) => setQuantidade(Number(e.target.value))} fullWidth size="small" />
         </Box>
-
-        {/* Descrição */}
-        <TextField label="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} fullWidth size="small" multiline rows={2} />
-
-        {/* Categoria */}
-        <TextField label="Categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} fullWidth size="small" />
-
-        {/* SKU e Desconto */}
-        <Box display="flex" gap={2}>
-          <TextField label="código produto" value={sku} onChange={(e) => setSku(e.target.value)} fullWidth size="small" />
-          <TextField label="Desconto (%)" type="number" value={desconto} onChange={(e) => setDesconto(Number(e.target.value))} fullWidth size="small" />
-        </Box>
-
-        <FormControlLabel
-          control={<Switch checked={checked} onChange={handleChange} color="success" />}
-          label={checked ? "Ativo" : "Inativo"}
-        />
-
-        {/* Botões */}
-        <Box display="flex" justifyContent="flex-end">
-          <Button onClick={onClose} color="error" variant="outlined" sx={{ mr: 2 }} size="small">
-            Cancelar
-          </Button>
-          <Button onClick={handleSubmit} size="small" color="success" variant="contained" disabled={loading}>
-            {loading ? "Salvando..." : "Salvar"}
-          </Button>
+        <Box sx={{ flex: 1 }}>
+          <TextField 
+            label="Quantidade" 
+            type="number" 
+            value={quantidade} 
+            onChange={(e) => setQuantidade(Number(e.target.value))} 
+            fullWidth 
+            size="small" 
+          />
         </Box>
       </Box>
-    </Dialog>
+
+      {/* Descrição */}
+      <Box>
+        <TextField 
+          label="Descrição" 
+          value={descricao} 
+          onChange={(e) => setDescricao(e.target.value)} 
+          fullWidth 
+          size="small" 
+          multiline 
+          rows={3}
+          placeholder="Descreva as características do produto..."
+        />
+      </Box>
+
+      {/* Categoria */}
+      <Box>
+        <Typography variant="subtitle2" fontWeight="bold" color="text.secondary" sx={{ mb: 1 }}>
+          CATEGORIA
+        </Typography>
+        <TextField 
+          label="Categoria" 
+          value={categoria} 
+          onChange={(e) => setCategoria(e.target.value)} 
+          fullWidth 
+          size="small"
+          placeholder="Ex: Eletrônicos, Roupas, etc."
+        />
+      </Box>
+
+      {/* SKU e Desconto */}
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{ flex: 1 }}>
+          <TextField 
+            label="Código do Produto" 
+            value={sku} 
+            onChange={(e) => setSku(e.target.value)} 
+            fullWidth 
+            size="small" 
+          />
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          <TextField 
+            label="Desconto (%)" 
+            type="number" 
+            value={desconto} 
+            onChange={(e) => setDesconto(Number(e.target.value))} 
+            fullWidth 
+            size="small"
+            InputProps={{
+              endAdornment: <InputAdornment position="end">%</InputAdornment>,
+            }}
+          />
+        </Box>
+      </Box>
+
+      {/* Status */}
+      <Box sx={{ 
+        display: "flex", 
+        alignItems: "center", 
+        justifyContent: "space-between",
+        p: 2,
+        borderRadius: 2,
+        backgroundColor: "grey.50",
+        border: "1px solid",
+        borderColor: "grey.200"
+      }}>
+        <Box>
+          <Typography variant="subtitle1" fontWeight="bold">
+            Status do Produto
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {checked ? "Produto visível para venda" : "Produto oculto"}
+          </Typography>
+        </Box>
+        <Switch 
+          checked={checked} 
+          onChange={handleChange} 
+          color="success" 
+          size="medium"
+        />
+      </Box>
+
+      {/* Botões */}
+      <Box sx={{ 
+        display: "flex", 
+        justifyContent: "flex-end", 
+        gap: 2,
+        pt: 2,
+        borderTop: "1px solid",
+        borderColor: "grey.200"
+      }}>
+        <Button 
+          onClick={onClose} 
+          color="inherit" 
+          variant="outlined" 
+          size="medium"
+          sx={{ minWidth: 100 }}
+        >
+          Cancelar
+        </Button>
+        <Button 
+          onClick={handleSubmit} 
+          size="medium" 
+          color="success" 
+          variant="contained" 
+          disabled={loading}
+          // sx={{ 
+          //   minWidth: 120,
+          //   background: "linear-gradient(135deg, #1e2939 0%, #925dc7 100%)",
+          //   '&:hover': {
+          //     background: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+          //   }
+          // }}
+        >
+          {loading ? (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <CircularProgress size={16} color="inherit" />
+              Salvando...
+            </Box>
+          ) : (
+            "Salvar Produto"
+          )}
+        </Button>
+      </Box>
+    </Box>
+  </Box>
+</Dialog>
   );
 };
