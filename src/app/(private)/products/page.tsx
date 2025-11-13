@@ -13,7 +13,6 @@ import {
   Stack,
   Divider,
   useMediaQuery,
-
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
@@ -21,6 +20,7 @@ import { } from "@mui/material";
 import { displayMessage } from "@/components/displayMessage";
 import { ModalAdicionarProduto } from "./productsModal";
 import { AxiosError } from "axios";
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
 
 export default function ProdutosPage() {
   const theme = useTheme();
@@ -191,6 +191,16 @@ export default function ProdutosPage() {
                         size="small"
                       >
                         <InfoIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Vender" arrow>
+                      <IconButton
+                        color="success"
+                        component={Link}
+                        href={`/produtos/${product.id}`}
+                        size="small"
+                      >
+                        <PointOfSaleIcon />
                       </IconButton>
                     </Tooltip>
                     {/* {product.status === true && (
